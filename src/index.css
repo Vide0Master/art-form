@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* небольшие утилиты для фиксированных элементов */
+.theme-toggle-wrapper {
+    @apply fixed top-4 left-4 z-50;
+}

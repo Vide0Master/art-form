@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'bahnscrift';
+    src: url('./Bahnschrift.ttf');
+    font-display: swap;
+}
+
+* {
+    font-family: 'bahnscrift';
+}
