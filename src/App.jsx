@@ -219,24 +219,18 @@ function SaveDropdown({
 
             {open && (
                 <div className="absolute right-0 mt-2 w-max bg-gray-900 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-50 animate-scale">
-                    <div
-                        className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white transition flex flex-row items-center gap-2"
-                        onClick={() => {
+                    <div className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white transition flex flex-row items-center gap-2" onClick={() => {
                             setOpen(false);
                             handleSaveToStorage();
-                        }}
-                    >
-                        <Globe size={20}/> {t('saveToBrowser')}
+                        }}>
+                        <Globe size={20} /> {t('saveToBrowser')}
                     </div>
 
-                    <div
-                        className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white transition flex flex-row items-center gap-2"
-                        onClick={() => {
+                    <div className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white transition flex flex-row items-center gap-2" onClick={() => {
                             setOpen(false);
                             handleSaveToFile();
-                        }}
-                    >
-                        <Download size={20}/> {t('saveToFile')}
+                        }}>
+                        <Download size={20} /> {t('saveToFile')}
                     </div>
                 </div>
             )}
@@ -1172,7 +1166,7 @@ const App = () => {
                     </section>
                 )}
 
-                <section className={`${viewMode ? 'col-span-1' : 'lg:col-span-5 lg:sticky lg:top-24'} h-fit animate-slideIn`}>
+                <section className={`${viewMode ? 'col-span-1' : 'lg:col-span-5 lg:sticky lg:top-24'} animate-slideIn h-[calc(100vh-75px-64px)] overflow-y-auto rounded-xl`}>
                     <div className="flex items-center gap-2 mb-6 justify-between">
                         {!viewMode && <div className="flex items-center gap-2"><Eye className="w-5 h-5 text-gray-400" /><h2 className="text-lg font-semibold text-gray-200">{t('formPreview')}</h2></div>}
                         {!viewMode && <span className="text-xs font-mono text-gray-500 uppercase">{t('livePreview')}</span>}

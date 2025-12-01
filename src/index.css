@@ -6,3 +6,43 @@
 .theme-toggle-wrapper {
     @apply fixed top-4 left-4 z-50;
 }
+
+/* ===== Custom Scrollbar ===== */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+    width: 4px;
+    /* толщина вертикального скролла */
+    height: 4px;
+    /* толщина горизонтального */
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    /* полностью прозрачный фон */
+    margin: 2px;
+    /* отступы по 2px с каждой стороны */
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    /* белый полупрозрачный */
+    border-radius: 8px;
+    /* скругление */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+/* Убираем стрелочки */
+::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    /* тонкий */
+    scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
