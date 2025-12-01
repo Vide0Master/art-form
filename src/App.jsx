@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
-    Palette, Save, Eye, Brush, CheckCircle2, Plus, Trash2, Type, AlignLeft,
-    List, CheckSquare, Paperclip, Lock, Unlock, X, Pipette, LayoutTemplate,
+    Palette, Save, Eye, Brush, CheckCircle2, Plus, Trash2, Type, AlignLeft, ChevronDown,
+    List, CheckSquare, Paperclip, Lock, Unlock, X, Pipette, LayoutTemplate, Upload,
     ArrowUp, ArrowDown, Asterisk, LayoutGrid, Menu, FolderOpen, FileJson,
     Share2, FileDown, Hash, ExternalLink, Link as LinkIcon, ListPlus,
-    Image as ImageIcon, FileText, Globe, Languages
+    Image as ImageIcon, FileText, Globe, Languages,
+    Download
 } from 'lucide-react';
 import LZString from 'lz-string';
 import { jsPDF } from 'jspdf';
@@ -53,7 +54,8 @@ const translations = {
         confirmLoad: "Load template \"{name}\"?", confirmDelete: "Delete template?",
         errorLoad: "Error loading",
         defTitle: "Commission Slot", defArtist: "Anna Smith", defAgree: "I agree", defList: "List", defNewField: "New Field",
-        lockTip: "Locking this option fixes its state"
+        lockTip: "Locking this option fixes its state", saveToBrowser: "Save to browser", saveToFile: "Save to computer",
+        uploadTemplate: "Upload template"
     },
     ru: {
         appTitle: "Конструктор", myTemplates: "Мои шаблоны", noTemplates: "Нет шаблонов",
@@ -81,7 +83,8 @@ const translations = {
         confirmLoad: "Загрузить \"{name}\"?", confirmDelete: "Удалить?",
         errorLoad: "Ошибка",
         defTitle: "Слот", defArtist: "Художник", defAgree: "Согласен", defList: "Список", defNewField: "Поле",
-        lockTip: "Замок фиксирует состояние"
+        lockTip: "Замок фиксирует состояние", saveToBrowser: "Сохранить в браузере", saveToFile: "Сохранить на компьютере",
+        uploadTemplate: "Загрузить шаблон"
     },
     uk: {
         appTitle: "Конструктор", myTemplates: "Шаблони", noTemplates: "Немає шаблонів",
@@ -109,7 +112,8 @@ const translations = {
         confirmLoad: "Завантажити \"{name}\"?", confirmDelete: "Видалити?",
         errorLoad: "Помилка",
         defTitle: "Слот", defArtist: "Художник", defAgree: "Згоден", defList: "Список", defNewField: "Поле",
-        lockTip: "Замок фіксує стан"
+        lockTip: "Замок фіксує стан", saveToBrowser: "Зберегти у браузері", saveToFile: "Зберегти на комп'ютері",
+        uploadTemplate: "Завантажити шаблон"
     }
 };
 
@@ -134,7 +138,7 @@ const generateHashID = (str) => {
 // ==========================================
 
 // --- 2.1 HEADER COMPONENT ---
-const Header = ({ lang, changeLanguage, t, isCopied, handleShareLink, handleSaveToStorage, setShowTemplateMenu, viewMode, themeStyles, isSaved }) => {
+const Header = ({ lang, changeLanguage, t, isCopied, handleShareLink, handleSaveToStorage, handleSaveToFile, setShowTemplateMenu, setShowTemplateUploadMenu, viewMode, themeStyles, isSaved }) => {
     if (viewMode) return null;
 
     return (
@@ -159,7 +163,10 @@ const Header = ({ lang, changeLanguage, t, isCopied, handleShareLink, handleSave
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 overflow-x-auto">
+                <div className="flex items-center gap-3 overflow-x-visible">
+                    <button onClick={() => setShowTemplateUploadMenu(true)} className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-300 hover:bg-gray-800 border border-transparent hover:border-gray-700 whitespace-nowrap">
+                        <Upload size={18} /><span className="hidden sm:inline">{t('uploadTemplate')}</span>
+                    </button>
                     <button onClick={() => setShowTemplateMenu(true)} className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-300 hover:bg-gray-800 border border-transparent hover:border-gray-700 whitespace-nowrap">
                         <FolderOpen size={18} /><span className="hidden sm:inline">{t('myTemplates')}</span>
                     </button>
@@ -167,17 +174,78 @@ const Header = ({ lang, changeLanguage, t, isCopied, handleShareLink, handleSave
                     <button onClick={handleShareLink} className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-blue-400 hover:bg-blue-900/20 border border-blue-900/30 whitespace-nowrap">
                         {isCopied ? <CheckCircle2 size={18} /> : <Share2 size={18} />} <span className="hidden sm:inline">{isCopied ? t('linkCopied') : t('shareLink')}</span>
                     </button>
-                    <button onClick={handleSaveToStorage} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-white hover:opacity-90 whitespace-nowrap ${isSaved ? 'bg-green-500/20 text-green-400 !bg-none' : themeStyles.bgClass}`} style={isSaved ? {} : themeStyles.bgStyle}>
+                    {/* <button onClick={handleSaveToStorage} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-white hover:opacity-90 whitespace-nowrap ${isSaved ? 'bg-green-500/20 text-green-400 !bg-none' : themeStyles.bgClass}`} style={isSaved ? {} : themeStyles.bgStyle}>
                         {isSaved ? <CheckCircle2 size={18} /> : <Save size={18} />} {isSaved ? t('saved') : t('saveTemplate')}
-                    </button>
+                    </button> */}
+                    <SaveDropdown handleSaveToStorage={handleSaveToStorage} handleSaveToFile={handleSaveToFile} isSaved={isSaved} themeStyles={themeStyles} t={t} />
                 </div>
             </div>
         </header>
     );
 };
 
+function SaveDropdown({
+    isSaved,
+    themeStyles,
+    handleSaveToStorage,
+    handleSaveToFile,
+    t
+}) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    // закрытие кликом вне
+    useEffect(() => {
+        const handler = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("click", handler);
+        return () => document.removeEventListener("click", handler);
+    }, []);
+
+    return (
+        <div className="relative inline-block" ref={ref}>
+            <button
+                onClick={() => setOpen(!open)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-white hover:opacity-90 whitespace-nowrap ${isSaved ? 'bg-green-500/20 text-green-400 !bg-none' : themeStyles.bgClass}`}
+                style={isSaved ? {} : themeStyles.bgStyle}
+            >
+                {isSaved ? <CheckCircle2 size={18} /> : <Save size={18} />}
+                {isSaved ? t('saved') : t('saveTemplate')}
+                <ChevronDown size={16} className="opacity-60" />
+            </button>
+
+            {open && (
+                <div className="absolute right-0 mt-2 w-max bg-gray-900 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-50 animate-scale">
+                    <div
+                        className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white transition"
+                        onClick={() => {
+                            setOpen(false);
+                            handleSaveToStorage();
+                        }}
+                    >
+                        💾 {t('saveToBrowser')}
+                    </div>
+
+                    <div
+                        className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white transition"
+                        onClick={() => {
+                            setOpen(false);
+                            handleSaveToFile();
+                        }}
+                    >
+                        📄 {t('saveToFile')}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 // --- 2.2 TEMPLATE MENU MODAL ---
-const TemplateMenu = ({ show, onClose, savedTemplates, onLoad, onDelete, t }) => {
+const TemplateMenu = ({ show, onClose, savedTemplates, onLoad, onDelete, t, onFileDownload }) => {
     if (!show) return null;
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
@@ -191,9 +259,16 @@ const TemplateMenu = ({ show, onClose, savedTemplates, onLoad, onDelete, t }) =>
                         <div className="text-center py-8 text-gray-500"><FileJson size={32} className="mx-auto mb-2 opacity-50" /><p>{t('noTemplates')}</p></div>
                     ) : (
                         savedTemplates.map(tpl => (
-                            <div key={tpl.id} onClick={() => onLoad(tpl)} className="flex items-center justify-between p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 border border-gray-600 cursor-pointer group">
-                                <div><h4 className="font-medium text-gray-200">{tpl.name}</h4><p className="text-xs text-gray-400">from {tpl.createdAt}</p></div>
-                                <button onClick={(e) => onDelete(tpl.id, e)} className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-md opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
+                            <div key={tpl.id} onClick={() => onLoad(tpl)} className="flex items-center p-3 gap-1 rounded-lg bg-gray-700/50 hover:bg-gray-700 border border-gray-600 cursor-pointer group">
+                                <div><h4 className="font-medium text-gray-200">{tpl.name}</h4><p className="text-xs text-gray-400">{tpl.createdAt}</p></div>
+                                <button onClick={(e) => {
+                                    e.stopPropagation()
+                                    onFileDownload(tpl)
+                                }} className="ml-auto p-2 text-gray-500 hover:text-green-400 hover:bg-green-900/20 rounded-md opacity-0 group-hover:opacity-100"><Download size={16} /></button>
+                                <button onClick={(e) => {
+                                    e.stopPropagation()
+                                    onDelete(tpl.id, e)
+                                }} className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-md opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button>
                             </div>
                         ))
                     )}
@@ -202,6 +277,56 @@ const TemplateMenu = ({ show, onClose, savedTemplates, onLoad, onDelete, t }) =>
         </div>
     );
 };
+
+const TemplateUploadMenu = ({ show, onClose, onFileUpload, t }) => {
+    if (!show) return null;
+
+    const handleJsonUpload = async (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+
+        for (const file of files) {
+            if (!file.name.endsWith(".json")) {
+                alert(t("invalidFileType") || "Only .json files are allowed");
+                continue;
+            }
+
+            try {
+                const text = await file.text();
+                const parsed = JSON.parse(text);
+
+                onFileUpload(parsed);
+                onClose()
+            } catch (err) {
+                alert(t("invalidJsonFile"));
+                console.error(err);
+            }
+        }
+    };
+
+    return (
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
+            <div className="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-md shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()} >
+                <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <Upload className="text-blue-400" size={20} /> {t("uploadTemplate")}
+                    </h3>
+                    <button onClick={onClose} className="text-gray-400 hover:text-white">
+                        <X size={20} />
+                    </button>
+                </div>
+
+                <div className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors group border-gray-300 hover:border-gray-400 cursor-pointer hover:bg-gray-50`}>
+                    <input type="file" accept="application/json,.json" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleJsonUpload} />
+                    <Paperclip className="mx-auto text-gray-400 mb-2 group-hover:text-gray-600" size={24} />
+                    <span className="text-sm text-gray-500">{t("clickToUploadJson") || "Click to upload JSON"}</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
 // --- 2.3 BUILDER: FIELD CONFIGURATION CARD ---
 const BuilderFieldCard = ({
@@ -576,6 +701,7 @@ const App = () => {
     const [isCopied, setIsCopied] = useState(false);
     const [savedTemplates, setSavedTemplates] = useState([]);
     const [showTemplateMenu, setShowTemplateMenu] = useState(false);
+    const [showTemplateUploadMenu, setShowTemplateUploadMenu] = useState(false);
     const [viewMode, setViewMode] = useState(false);
 
     // --- DERIVED & HOOKS ---
@@ -658,6 +784,26 @@ const App = () => {
         setSavedTemplates(updated);
         localStorage.setItem('artform_templates', JSON.stringify(updated));
         setIsSaved(true); setTimeout(() => setIsSaved(false), 3000);
+    };
+
+    const handleSaveToFile = (data) => {
+        const name = prompt(t('promptSaveName'), headerInfo.title);
+        if (!name) return;
+
+        const jsonData = JSON.stringify({
+            name,
+            createdAt: new Date().toLocaleDateString('en-US'),
+            data: data || { headerInfo, fields, themeColor, customColor }
+        }, null, 2);
+
+        const blob = new Blob([jsonData], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${name}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
     };
 
     const loadTemplate = (template) => {
@@ -929,8 +1075,9 @@ const App = () => {
 
     return (
         <div className="min-h-screen bg-gray-900 text-gray-100 font-sans selection:bg-gray-700 relative flex flex-col">
-            <TemplateMenu show={showTemplateMenu} onClose={() => setShowTemplateMenu(false)} savedTemplates={savedTemplates} onLoad={loadTemplate} onDelete={deleteTemplate} t={t} />
-            <Header lang={lang} changeLanguage={changeLanguage} t={t} isCopied={isCopied} handleShareLink={handleShareLink} handleSaveToStorage={handleSaveToStorage} setShowTemplateMenu={setShowTemplateMenu} viewMode={viewMode} themeStyles={themeStyles} isSaved={isSaved} />
+            <TemplateMenu show={showTemplateMenu} onClose={() => setShowTemplateMenu(false)} savedTemplates={savedTemplates} onLoad={loadTemplate} onDelete={deleteTemplate} t={t} onFileDownload={handleSaveToFile} />
+            <TemplateUploadMenu show={showTemplateUploadMenu} onClose={() => setShowTemplateUploadMenu(false)} onFileUpload={loadTemplate} t={t} />
+            <Header lang={lang} changeLanguage={changeLanguage} t={t} isCopied={isCopied} handleShareLink={handleShareLink} handleSaveToStorage={handleSaveToStorage} handleSaveToFile={handleSaveToFile} setShowTemplateMenu={setShowTemplateMenu} setShowTemplateUploadMenu={setShowTemplateUploadMenu} viewMode={viewMode} themeStyles={themeStyles} isSaved={isSaved} />
 
             <main className={`max-w-7xl mx-auto px-4 py-8 grid gap-8 transition-all ${viewMode ? 'grid-cols-1 max-w-3xl' : 'grid-cols-1 lg:grid-cols-12'}`}>
                 {!viewMode && (
@@ -978,7 +1125,6 @@ const App = () => {
                                                 }));
                                             }
 
-                                            // безопасный сброс — НЕ вызывает повторный onChange
                                             langSelectRef.current.value = "";
                                         }}
                                     >
