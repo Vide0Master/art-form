@@ -220,16 +220,16 @@ function SaveDropdown({
             {open && (
                 <div className="absolute right-0 mt-2 w-max bg-gray-900 border border-gray-700 rounded-xl shadow-lg overflow-hidden z-50 animate-scale">
                     <div className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white transition flex flex-row items-center gap-2" onClick={() => {
-                            setOpen(false);
-                            handleSaveToStorage();
-                        }}>
+                        setOpen(false);
+                        handleSaveToStorage();
+                    }}>
                         <Globe size={20} /> {t('saveToBrowser')}
                     </div>
 
                     <div className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-white transition flex flex-row items-center gap-2" onClick={() => {
-                            setOpen(false);
-                            handleSaveToFile();
-                        }}>
+                        setOpen(false);
+                        handleSaveToFile();
+                    }}>
                         <Download size={20} /> {t('saveToFile')}
                     </div>
                 </div>
@@ -1206,6 +1206,18 @@ const App = () => {
                     )}
                 </section>
             </main>
+            <footer className='p-2 flex flex-row items-center gap-4 justify-center'>
+                <div className="bg-black p-2 flex flex-col gap-1 h-fit font-bold content-stretch shadow-md shadow-black">
+                    <div className="h-fit">
+                        <span>Hosted and developed by </span>
+                        <span className="text-[#c62020]">V</span>
+                        <span className="text-[#208fc6]">M</span>
+                        <span>Tech Services</span>
+                    </div>
+                    <div className="h-1 bg-white rounded-full vm-gradient-line"></div>
+                </div>
+                <span><a href="https://github.com/Vide0Master/art-form">GitHub repository</a></span>
+            </footer>
         </div>
     );
 };
