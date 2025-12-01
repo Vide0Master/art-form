@@ -581,6 +581,8 @@ const App = () => {
     // --- DERIVED & HOOKS ---
     const activeColorHex = themeColor === 'custom' ? customColor : { purple: '#9333ea', blue: '#2563eb', emerald: '#059669', rose: '#e11d48', amber: '#d97706' }[themeColor];
 
+    const langSelectRef = useRef();
+
     const configHash = useMemo(() => {
         const configString = JSON.stringify({
             headerInfo, fields: fields.map(f => {
@@ -959,10 +961,33 @@ const App = () => {
                                     ))}
                                 </div>
                                 <div className="flex gap-2">
-                                    <select className="bg-gray-900 border border-gray-700 rounded-md px-3 py-1.5 text-sm text-gray-300 outline-none focus:border-blue-500" onChange={(e) => { if (e.target.value && !headerInfo.preferredLanguages.includes(e.target.value)) { setHeaderInfo(p => ({ ...p, preferredLanguages: [...p.preferredLanguages, e.target.value] })); e.target.value = ""; } }}>
+                                    <select
+                                        ref={langSelectRef}
+                                        className="bg-gray-900 border border-gray-700 rounded-md px-3 py-1.5 text-sm text-gray-300 outline-none focus:border-blue-500"
+                                        defaultValue=""
+                                        onChange={(e) => {
+                                            const value = e.target.value.trim();
+
+                                            console.log("select value:", JSON.stringify(value));
+                                            console.log("before:", headerInfo.preferredLanguages);
+
+                                            if (value && !headerInfo.preferredLanguages.includes(value)) {
+                                                setHeaderInfo(p => ({
+                                                    ...p,
+                                                    preferredLanguages: [...p.preferredLanguages, value]
+                                                }));
+                                            }
+
+                                            // безопасный сброс — НЕ вызывает повторный onChange
+                                            langSelectRef.current.value = "";
+                                        }}
+                                    >
                                         <option value="">{t('addLang')}...</option>
-                                        {AVAILABLE_LANGS.filter(l => !(headerInfo.preferredLanguages || []).includes(l.code)).map(l => <option key={l.code} value={l.code}>{l.flag} {l.label}</option>)}
+                                        {AVAILABLE_LANGS
+                                            .filter(l => !headerInfo.preferredLanguages.includes(l.code))
+                                            .map(l => <option key={l.code} value={l.code}>{l.label}</option>)}
                                     </select>
+
                                 </div>
                             </div>
                             <div className="border-t border-gray-700/50 pt-4 flex items-center justify-between">
