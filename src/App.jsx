@@ -5,15 +5,14 @@ import {
     ArrowUp, ArrowDown, Asterisk, LayoutGrid, Menu, FolderOpen, FileJson,
     Share2, FileDown, Hash, ExternalLink, Link as LinkIcon, ListPlus,
     Image as ImageIcon, FileText, Globe, Languages,
-    Download
+    Download,
+    InfoIcon,
+    Github
 } from 'lucide-react';
 import LZString from 'lz-string';
 import { jsPDF } from 'jspdf';
 import FontUrl from "./Bahnschrift.ttf"
 
-// ==========================================
-// 1. CONSTANTS & UTILS
-// ==========================================
 
 const AVAILABLE_LANGS = [
     { code: 'en', label: 'English' },
@@ -27,6 +26,7 @@ const AVAILABLE_LANGS = [
     { code: 'zh', label: '中文 (Chinese)' },
 ];
 
+//region langs
 const translations = {
     en: {
         appTitle: "Builder", myTemplates: "My Templates", noTemplates: "No saved templates",
@@ -55,7 +55,34 @@ const translations = {
         errorLoad: "Error loading",
         defTitle: "Commission Slot", defArtist: "Anna Smith", defAgree: "I agree", defList: "List", defNewField: "New Field",
         lockTip: "Locking this option fixes its state", saveToBrowser: "Save to browser", saveToFile: "Save to computer",
-        uploadTemplate: "Upload template"
+        uploadTemplate: "Upload template", gitHubRepo: "GitHub repository", viewInstructions: "View instructions", instructions: "Instructions",
+        hostedAndDeveloped: "Hosted and developed by",
+
+        instructions_tldr: "TL;DR: How to use this?",
+        instructions_tldr_edit: "Edit the form to your needs.",
+        instructions_tldr_save: "Save it wherever you prefer.",
+        instructions_tldr_link: "Use the created link whenever you need nicely formatted PDF files.",
+        instructions_tldr_verify: "Verify the authenticity of received PDF files using the key.",
+
+        instructions_header: "Header",
+        instructions_header_title: "Title: sets the title of the result form and the PDF document.",
+        instructions_header_artist: "Artist: sets the author's name for the result form and the PDF document.",
+        instructions_header_langs: "Preferred languages: sets the list of the author's preferred languages.",
+
+        instructions_fields: "Fields",
+        instructions_fields_short: "Short/Long text creates text input fields.",
+        instructions_fields_block: "Text block behaves as an insertable text description block.",
+        instructions_fields_dynamic: "Dynamic list allows users to fill existing or create new fields.",
+        instructions_fields_single: "Single select allows users to select one option. Locking it selects a specific option and prevents choosing others.",
+        instructions_fields_multi: "Multiple select allows users to select several options. Locking it prevents changing the state of specific options.",
+        instructions_fields_images: "Images allow users to include image files in the PDF document.",
+        instructions_fields_agreement: "Agreement requires users to confirm that they agree to the given terms. The \"Require click\" option makes opening link mandatory.",
+
+        instructions_saving: "Saving",
+        instructions_saving_browser: "There are two options to save your forms: to the browser or to your device.",
+        instructions_saving_browser_desc: "Saving to the browser stores forms locally in your current browser. Forms are not shared between devices. To access them, click the “My templates” button.",
+        instructions_saving_file_desc: "Saving to your computer saves a .json file with your data. It can be uploaded using the “Upload template” option.",
+
     },
     ru: {
         appTitle: "Конструктор", myTemplates: "Мои шаблоны", noTemplates: "Нет шаблонов",
@@ -84,7 +111,33 @@ const translations = {
         errorLoad: "Ошибка",
         defTitle: "Слот", defArtist: "Художник", defAgree: "Согласен", defList: "Список", defNewField: "Поле",
         lockTip: "Замок фиксирует состояние", saveToBrowser: "Сохранить в браузере", saveToFile: "Сохранить на компьютере",
-        uploadTemplate: "Загрузить шаблон"
+        uploadTemplate: "Загрузить шаблон", gitHubRepo: "Репозиторий GitHub", viewInstructions: "Смотреть инструкцию", instructions: "Инструкция",
+        hostedAndDeveloped: "Размещено и разработано",
+
+        instructions_tldr: "TL;DR: Как этим пользоваться?",
+        instructions_tldr_edit: "Отредактируйте форму под свои нужды.",
+        instructions_tldr_save: "Сохраните её туда, куда вам удобно.",
+        instructions_tldr_link: "Используйте созданную ссылку, когда нужны красиво отформатированные PDF-файлы.",
+        instructions_tldr_verify: "Проверяйте подлинность полученных PDF с помощью ключа.",
+
+        instructions_header: "Шапка",
+        instructions_header_title: "Название: задаёт название формы и PDF-документа.",
+        instructions_header_artist: "Художник: задаёт имя автора формы и PDF-документа.",
+        instructions_header_langs: "Языки: задаёт список предпочитаемых языков автора.",
+
+        instructions_fields: "Поля",
+        instructions_fields_short: "Строка/Текст создаёт текстовые поля.",
+        instructions_fields_block: "Инфо используется как вставляемый блок текстового описания.",
+        instructions_fields_dynamic: "Список позволяет пользователю заполнять существующие или создавать новые пункты.",
+        instructions_fields_single: "Один позволяет выбрать только один вариант. Блокировка фиксирует выбранный вариант.",
+        instructions_fields_multi: "Несколько select позволяет выбрать несколько вариантов. Блокировка не даёт менять состояние выбранных.",
+        instructions_fields_images: "Картинки позволяют добавлять изображения в PDF-документ.",
+        instructions_fields_agreement: "Согласие требует подтвердить согласие с условиями. «Кликнуть» делает открытие ссылки обязательным.",
+
+        instructions_saving: "Сохранение",
+        instructions_saving_browser: "Есть два способа сохранить форму: в браузер или на устройство.",
+        instructions_saving_browser_desc: "Сохранение в браузер хранит шаблоны локально. Они не синхронизируются между устройствами. Чтобы открыть их, нажмите «Мои шаблоны».",
+        instructions_saving_file_desc: "Сохранение на компьютер создаёт .json файл с данными. Его можно загрузить через «Загрузить шаблон».",
     },
     uk: {
         appTitle: "Конструктор", myTemplates: "Шаблони", noTemplates: "Немає шаблонів",
@@ -113,7 +166,33 @@ const translations = {
         errorLoad: "Помилка",
         defTitle: "Слот", defArtist: "Художник", defAgree: "Згоден", defList: "Список", defNewField: "Поле",
         lockTip: "Замок фіксує стан", saveToBrowser: "Зберегти у браузері", saveToFile: "Зберегти на комп'ютері",
-        uploadTemplate: "Завантажити шаблон"
+        uploadTemplate: "Завантажити шаблон", gitHubRepo: "Репозиторій GitHub", viewInstructions: "Переглянути інструкцію", instructions: "Інструкції",
+        hostedAndDeveloped: "Розміщено та розроблено",
+
+        instructions_tldr: "TL;DR: Як це використовувати?",
+        instructions_tldr_edit: "Відредагуйте форму під свої потреби.",
+        instructions_tldr_save: "Збережіть її там, де вам зручно.",
+        instructions_tldr_link: "Використовуйте створене посилання, коли потрібні красиво відформатовані PDF-файли.",
+        instructions_tldr_verify: "Перевіряйте автентичність отриманих PDF за допомогою ключа.",
+
+        instructions_header: "Шапка",
+        instructions_header_title: "Назва: встановлює назву форми та PDF-документу.",
+        instructions_header_artist: "Художник: встановлює ім’я автора форми та PDF-документу.",
+        instructions_header_langs: "Мови: визначає список бажаних мов автора.",
+
+        instructions_fields: "Поля",
+        instructions_fields_short: "Рядок/Текст text створює текстові поля.",
+        instructions_fields_block: "Інфо є вставним блоком текстового опису.",
+        instructions_fields_dynamic: "Список дозволяє заповнювати наявні або створювати нові пункти.",
+        instructions_fields_single: "Один select дозволяє вибрати один варіант. Блокування фіксує обраний варіант.",
+        instructions_fields_multi: "Кілька select дозволяє вибрати кілька варіантів. Блокування забороняє змінювати стан окремих пунктів.",
+        instructions_fields_images: "Зображення дозволяють додавати зображення у PDF-документ.",
+        instructions_fields_agreement: "Згода вимагає підтвердження згоди з умовами. «Клікнути» робить відкриття посилання обов'язковим.",
+
+        instructions_saving: "Збереження",
+        instructions_saving_browser: "Є два способи зберегти форму: у браузері або на пристрої.",
+        instructions_saving_browser_desc: "Збереження у браузері зберігає шаблони локально. Вони не синхронізуються між пристроями. Щоб відкрити їх, натисніть «Мої шаблони».",
+        instructions_saving_file_desc: "Збереження на комп'ютер створює файл .json з даними. Його можна завантажити через «Завантажити шаблон».",
     }
 };
 
@@ -133,11 +212,7 @@ const generateHashID = (str) => {
     return Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
 };
 
-// ==========================================
-// 2. SUB-COMPONENTS
-// ==========================================
-
-// --- 2.1 HEADER COMPONENT ---
+//region header
 const Header = ({ lang, changeLanguage, t, isCopied, handleShareLink, handleSaveToStorage, handleSaveToFile, setShowTemplateMenu, setShowTemplateUploadMenu, viewMode, themeStyles, isSaved }) => {
     if (viewMode) return null;
 
@@ -174,9 +249,6 @@ const Header = ({ lang, changeLanguage, t, isCopied, handleShareLink, handleSave
                     <button onClick={handleShareLink} className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-blue-400 hover:bg-blue-900/20 border border-blue-900/30 whitespace-nowrap">
                         {isCopied ? <CheckCircle2 size={18} /> : <Share2 size={18} />} <span className="hidden sm:inline">{isCopied ? t('linkCopied') : t('shareLink')}</span>
                     </button>
-                    {/* <button onClick={handleSaveToStorage} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-white hover:opacity-90 whitespace-nowrap ${isSaved ? 'bg-green-500/20 text-green-400 !bg-none' : themeStyles.bgClass}`} style={isSaved ? {} : themeStyles.bgStyle}>
-                        {isSaved ? <CheckCircle2 size={18} /> : <Save size={18} />} {isSaved ? t('saved') : t('saveTemplate')}
-                    </button> */}
                     <SaveDropdown handleSaveToStorage={handleSaveToStorage} handleSaveToFile={handleSaveToFile} isSaved={isSaved} themeStyles={themeStyles} t={t} />
                 </div>
             </div>
@@ -184,6 +256,7 @@ const Header = ({ lang, changeLanguage, t, isCopied, handleShareLink, handleSave
     );
 };
 
+//region save dropdown
 function SaveDropdown({
     isSaved,
     themeStyles,
@@ -238,7 +311,7 @@ function SaveDropdown({
     );
 }
 
-// --- 2.2 TEMPLATE MENU MODAL ---
+//region template menu
 const TemplateMenu = ({ show, onClose, savedTemplates, onLoad, onDelete, t, onFileDownload }) => {
     if (!show) return null;
     return (
@@ -272,6 +345,7 @@ const TemplateMenu = ({ show, onClose, savedTemplates, onLoad, onDelete, t, onFi
     );
 };
 
+//region template upload menu
 const TemplateUploadMenu = ({ show, onClose, onFileUpload, t }) => {
     if (!show) return null;
 
@@ -299,8 +373,7 @@ const TemplateUploadMenu = ({ show, onClose, onFileUpload, t }) => {
     };
 
     return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
             <div className="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-md shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()} >
                 <div className="p-4 border-b border-gray-700 flex justify-between items-center">
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -322,7 +395,7 @@ const TemplateUploadMenu = ({ show, onClose, onFileUpload, t }) => {
 };
 
 
-// --- 2.3 BUILDER: FIELD CONFIGURATION CARD ---
+//region field configurator
 const BuilderFieldCard = ({
     field, index, totalFields, t,
     onUpdate, onRemove, onMoveUp, onMoveDown,
@@ -477,7 +550,7 @@ const BuilderFieldCard = ({
     );
 };
 
-// --- 2.4 PREVIEW: FIELD RENDERER ---
+//region preview field renderer
 const PreviewFieldRenderer = ({
     field, viewMode, themeStyles, t,
     onValueChange, onDynamicItemChange, onDynamicItemRemove, onDynamicItemAdd,
@@ -656,12 +729,72 @@ const PreviewFieldRenderer = ({
     );
 };
 
-// ==========================================
-// 3. MAIN APP COMPONENT
-// ==========================================
+//region instructions menu
+const InstructionsOverlay = ({
+    show, onClose, t
+}) => {
+    if (!show) return null
 
+    return (
+        <div>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
+                <div className="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-[700px] shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()} >
+                    <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                            <InfoIcon className="text-blue-400" size={20} /> {t("instructions")}
+                        </h3>
+                        <button onClick={onClose} className="text-gray-400 hover:text-white">
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className='p-4 flex flex-col gap-3'>
+                        {/* TLDR */}
+                        <div>
+                            <div className='font-bold text-2xl'>{t('instructions_tldr')}</div>
+                            <div>{t('instructions_tldr_edit')}</div>
+                            <div>{t('instructions_tldr_save')}</div>
+                            <div>{t('instructions_tldr_link')}</div>
+                            <div>{t('instructions_tldr_verify')}</div>
+                        </div>
+
+                        {/* Header */}
+                        <div>
+                            <div className='font-bold text-2xl'>{t('instructions_header')}</div>
+                            <div>{t('instructions_header_title')}</div>
+                            <div>{t('instructions_header_artist')}</div>
+                            <div>{t('instructions_header_langs')}</div>
+                        </div>
+
+                        {/* Fields */}
+                        <div>
+                            <div className='font-bold text-2xl'>{t('instructions_fields')}</div>
+                            <div>{t('instructions_fields_short')}</div>
+                            <div>{t('instructions_fields_block')}</div>
+                            <div>{t('instructions_fields_dynamic')}</div>
+                            <div>{t('instructions_fields_single')}</div>
+                            <div>{t('instructions_fields_multi')}</div>
+                            <div>{t('instructions_fields_images')}</div>
+                            <div>{t('instructions_fields_agreement')}</div>
+                        </div>
+
+                        {/* Saving */}
+                        <div>
+                            <div className='font-bold text-2xl'>{t('instructions_saving')}</div>
+                            <div>{t('instructions_saving_browser')}</div>
+                            <div><Globe size={16} className='inline' /> {t('instructions_saving_browser_desc')}</div>
+                            <div><Download size={16} className='inline' /> {t('instructions_saving_file_desc')}</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    )
+}
+
+//region App
 const App = () => {
-    // --- LOCALIZATION ---
     const getBrowserLang = () => {
         const saved = localStorage.getItem('artform_lang');
         if (saved) return saved;
@@ -679,7 +812,6 @@ const App = () => {
         return text;
     };
 
-    // --- CORE STATE ---
     const [headerInfo, setHeaderInfo] = useState({ title: 'Comission template', artist: 'Jane doe', preferredLanguages: ['en'] });
     const [fields, setFields] = useState([
         { id: '1', type: 'short_text', label: 'Your name', value: '', displayStyle: 'default', options: [], isLocked: false, isRequired: true },
@@ -697,8 +829,8 @@ const App = () => {
     const [showTemplateMenu, setShowTemplateMenu] = useState(false);
     const [showTemplateUploadMenu, setShowTemplateUploadMenu] = useState(false);
     const [viewMode, setViewMode] = useState(false);
+    const [showInstructionsOverlay, setshowInstructionsOverlay] = useState(false)
 
-    // --- DERIVED & HOOKS ---
     const activeColorHex = themeColor === 'custom' ? customColor : { purple: '#9333ea', blue: '#2563eb', emerald: '#059669', rose: '#e11d48', amber: '#d97706' }[themeColor];
 
     const langSelectRef = useRef();
@@ -706,7 +838,7 @@ const App = () => {
     const configHash = useMemo(() => {
         const configString = JSON.stringify({
             headerInfo, fields: fields.map(f => {
-                if (f.type === 'info_text') return { ...f, value: f.value }; // Keep info text content
+                if (f.type === 'info_text') return { ...f, value: f.value };
                 if (f.type === 'dynamic_list') return { ...f, value: undefined };
                 if (f.type === 'consent') return { ...f, value: undefined, linkVisited: undefined };
                 return { ...f, value: undefined, linkVisited: undefined };
@@ -728,7 +860,6 @@ const App = () => {
         };
     }, [themeColor, customColor, activeColorHex]);
 
-    // --- LIFECYCLE ---
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const compressedData = params.get('f');
@@ -749,18 +880,16 @@ const App = () => {
         if (loaded) try { setSavedTemplates(JSON.parse(loaded)); } catch { /* empty */ }
     }, []);
 
-    // --- ACTIONS: HEADER & TEMPLATES ---
     const handleShareLink = () => {
         if (!LZString) { alert(t('alertLibsLoading')); return; }
         const data = {
             headerInfo, fields: fields.map(f => {
                 console.log(f)
-                if (f.type === 'info_text') return { ...f, value: f.value }; // Persist info text
+                if (f.type === 'info_text') return { ...f, value: f.value };
                 if (f.type === 'dynamic_list') return { ...f, value: f.value.map(v => ({ ...v, text: '' })) };
                 if (f.type === 'consent') return { ...f, value: [], linkVisited: {} };
                 if (f.type === 'single_select' && f.options.some(v => v.isLocked)) return { ...f }
                 if (f.type === 'multi_select' && f.options.some(v => v.isLocked)) return { ...f }
-                // Preserve lock states and options
                 return { ...f, value: (f.type === 'file' ? [] : ''), linkVisited: false };
             }), themeColor, customColor
         };
@@ -820,7 +949,6 @@ const App = () => {
         localStorage.setItem('artform_templates', JSON.stringify(updated));
     };
 
-    // --- ACTIONS: BUILDER (FIELD CRUD) ---
     const addField = (type) => {
         const newF = { id: Date.now().toString(), type, label: type === 'consent' ? t('defAgree') : (type === 'dynamic_list' ? t('defList') : t('defNewField')), value: type === 'multi_select' || type === 'dynamic_list' || type === 'file' || type === 'consent' ? [] : '', displayStyle: 'default', linkUrl: '', requireLinkOpen: false, linkVisited: {}, options: (type === 'single_select' || type === 'multi_select') ? [{ id: Date.now() + '1', label: t('optionLabel') + ' 1', value: 'opt1', isLocked: false }] : [], isLocked: false, isRequired: type === 'consent' };
         if (type === 'dynamic_list') newF.value = [{ id: Date.now() + 'dl', key: t('itemName'), text: '' }];
@@ -1067,8 +1195,10 @@ const App = () => {
 
     const fieldTypes = [{ type: 'short_text', label: t('typeShort'), icon: Type }, { type: 'long_text', label: t('typeLong'), icon: AlignLeft }, { type: 'info_text', label: t('typeInfo'), icon: FileText }, { type: 'dynamic_list', label: t('typeDynamic'), icon: ListPlus }, { type: 'single_select', label: t('typeSingle'), icon: List }, { type: 'multi_select', label: t('typeMulti'), icon: CheckSquare }, { type: 'file', label: t('typeImages'), icon: ImageIcon }, { type: 'consent', label: t('typeConsent'), icon: CheckCircle2 },];
 
+    //region App struct
     return (
         <div className="min-h-screen bg-gray-900 text-gray-100 font-sans selection:bg-gray-700 relative flex flex-col">
+            <InstructionsOverlay show={showInstructionsOverlay} onClose={() => setshowInstructionsOverlay(false)} t={t} />
             <TemplateMenu show={showTemplateMenu} onClose={() => setShowTemplateMenu(false)} savedTemplates={savedTemplates} onLoad={loadTemplate} onDelete={deleteTemplate} t={t} onFileDownload={handleSaveToFile} />
             <TemplateUploadMenu show={showTemplateUploadMenu} onClose={() => setShowTemplateUploadMenu(false)} onFileUpload={loadTemplate} t={t} />
             <Header lang={lang} changeLanguage={changeLanguage} t={t} isCopied={isCopied} handleShareLink={handleShareLink} handleSaveToStorage={handleSaveToStorage} handleSaveToFile={handleSaveToFile} setShowTemplateMenu={setShowTemplateMenu} setShowTemplateUploadMenu={setShowTemplateUploadMenu} viewMode={viewMode} themeStyles={themeStyles} isSaved={isSaved} />
@@ -1206,17 +1336,23 @@ const App = () => {
                     )}
                 </section>
             </main>
+
             <footer className='p-2 flex flex-row items-center gap-4 justify-center'>
                 <div className="bg-black p-2 flex flex-col gap-1 h-fit font-bold content-stretch shadow-md shadow-black">
                     <div className="h-fit">
-                        <span>Hosted and developed by </span>
+                        <span>{t('hostedAndDeveloped')} </span>
                         <span className="text-[#c62020]">V</span>
                         <span className="text-[#208fc6]">M</span>
                         <span>Tech Services</span>
                     </div>
                     <div className="h-1 bg-white rounded-full vm-gradient-line"></div>
                 </div>
-                <span><a href="https://github.com/Vide0Master/art-form">GitHub repository</a></span>
+                <a href="https://github.com/Vide0Master/art-form" className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-300 hover:bg-gray-800 border border-transparent hover:border-gray-700 whitespace-nowrap">
+                    <Github size={18} /><span className="hidden sm:inline">{t('gitHubRepo')}</span>
+                </a>
+                <button onClick={() => setshowInstructionsOverlay(true)} className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-300 hover:bg-gray-800 border border-transparent hover:border-gray-700 whitespace-nowrap">
+                    <InfoIcon size={18} /><span className="hidden sm:inline">{t('viewInstructions')}</span>
+                </button>
             </footer>
         </div>
     );
