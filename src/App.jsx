@@ -7,7 +7,8 @@ import {
     Image as ImageIcon, FileText, Globe, Languages,
     Download,
     InfoIcon,
-    Github
+    Github,
+    CircleQuestionMark
 } from 'lucide-react';
 import LZString from 'lz-string';
 import { jsPDF } from 'jspdf';
@@ -58,30 +59,14 @@ const translations = {
         uploadTemplate: "Upload template", gitHubRepo: "GitHub repository", viewInstructions: "View instructions", instructions: "Instructions",
         hostedAndDeveloped: "Hosted and developed by",
 
-        instructions_tldr: "TL;DR: How to use this?",
-        instructions_tldr_edit: "Edit the form to your needs.",
-        instructions_tldr_save: "Save it wherever you prefer.",
-        instructions_tldr_link: "Use the created link whenever you need nicely formatted PDF files.",
-        instructions_tldr_verify: "Verify the authenticity of received PDF files using the key.",
-
-        instructions_header: "Header",
-        instructions_header_title: "Title: sets the title of the result form and the PDF document.",
-        instructions_header_artist: "Artist: sets the author's name for the result form and the PDF document.",
-        instructions_header_langs: "Preferred languages: sets the list of the author's preferred languages.",
-
-        instructions_fields: "Fields",
-        instructions_fields_short: "Short/Long text creates text input fields.",
-        instructions_fields_block: "Text block behaves as an insertable text description block.",
-        instructions_fields_dynamic: "Dynamic list allows users to fill existing or create new fields.",
-        instructions_fields_single: "Single select allows users to select one option. Locking it selects a specific option and prevents choosing others.",
-        instructions_fields_multi: "Multiple select allows users to select several options. Locking it prevents changing the state of specific options.",
-        instructions_fields_images: "Images allow users to include image files in the PDF document.",
-        instructions_fields_agreement: "Agreement requires users to confirm that they agree to the given terms. The \"Require click\" option makes opening link mandatory.",
-
-        instructions_saving: "Saving",
-        instructions_saving_browser: "There are two options to save your forms: to the browser or to your device.",
-        instructions_saving_browser_desc: "Saving to the browser stores forms locally in your current browser. Forms are not shared between devices. To access them, click the “My templates” button.",
-        instructions_saving_file_desc: "Saving to your computer saves a .json file with your data. It can be uploaded using the “Upload template” option.",
+        short_text_tip: "Short text field is used to allow users to input small text into the form.",
+        long_text_tip: "Long text field is used to allow users to input large text into the form.",
+        dynamic_list_tip: "Dynamic list field is used to allow users to manually add and fill differently labeled text fields.",
+        single_select_tip: "Single select field allows users to select one option from the listed choices.",
+        multi_select_tip: "Multiple select field allows users to select multiple options from the listed choices.",
+        file_tip: "File input field allows users to attach images to the resulting PDF file.",
+        info_text_tip: "Text block field is used to display information inside the form and does not receive input from users.",
+        consent_tip: "Consent field is used to display information inside the form and requires users to confirm agreement when applicable."
 
     },
     ru: {
@@ -114,30 +99,14 @@ const translations = {
         uploadTemplate: "Загрузить шаблон", gitHubRepo: "Репозиторий GitHub", viewInstructions: "Смотреть инструкцию", instructions: "Инструкция",
         hostedAndDeveloped: "Размещено и разработано",
 
-        instructions_tldr: "TL;DR: Как этим пользоваться?",
-        instructions_tldr_edit: "Отредактируйте форму под свои нужды.",
-        instructions_tldr_save: "Сохраните её туда, куда вам удобно.",
-        instructions_tldr_link: "Используйте созданную ссылку, когда нужны красиво отформатированные PDF-файлы.",
-        instructions_tldr_verify: "Проверяйте подлинность полученных PDF с помощью ключа.",
-
-        instructions_header: "Шапка",
-        instructions_header_title: "Название: задаёт название формы и PDF-документа.",
-        instructions_header_artist: "Художник: задаёт имя автора формы и PDF-документа.",
-        instructions_header_langs: "Языки: задаёт список предпочитаемых языков автора.",
-
-        instructions_fields: "Поля",
-        instructions_fields_short: "Строка/Текст создаёт текстовые поля.",
-        instructions_fields_block: "Инфо используется как вставляемый блок текстового описания.",
-        instructions_fields_dynamic: "Список позволяет пользователю заполнять существующие или создавать новые пункты.",
-        instructions_fields_single: "Один позволяет выбрать только один вариант. Блокировка фиксирует выбранный вариант.",
-        instructions_fields_multi: "Несколько select позволяет выбрать несколько вариантов. Блокировка не даёт менять состояние выбранных.",
-        instructions_fields_images: "Картинки позволяют добавлять изображения в PDF-документ.",
-        instructions_fields_agreement: "Согласие требует подтвердить согласие с условиями. «Кликнуть» делает открытие ссылки обязательным.",
-
-        instructions_saving: "Сохранение",
-        instructions_saving_browser: "Есть два способа сохранить форму: в браузер или на устройство.",
-        instructions_saving_browser_desc: "Сохранение в браузер хранит шаблоны локально. Они не синхронизируются между устройствами. Чтобы открыть их, нажмите «Мои шаблоны».",
-        instructions_saving_file_desc: "Сохранение на компьютер создаёт .json файл с данными. Его можно загрузить через «Загрузить шаблон».",
+        short_text_tip: "Поле короткого текста используется для ввода пользователем небольшого текста в форму.",
+        long_text_tip: "Поле длинного текста используется для ввода пользователем большого текста в форму.",
+        dynamic_list_tip: "Поле динамического списка используется для того, чтобы пользователь мог добавлять и заполнять поля с разными метками.",
+        single_select_tip: "Поле одиночного выбора позволяет пользователю выбрать один вариант из предложенных.",
+        multi_select_tip: "Поле множественного выбора позволяет пользователю выбрать несколько вариантов из предложенных.",
+        file_tip: "Поле загрузки файлов позволяет пользователю прикреплять изображения к создаваемому PDF файлу.",
+        info_text_tip: "Текстовый блок используется для отображения информации в форме и не принимает ввод от пользователя.",
+        consent_tip: "Поле согласия используется для отображения информации в форме и требует подтверждения пользователем при необходимости."
     },
     uk: {
         appTitle: "Конструктор", myTemplates: "Шаблони", noTemplates: "Немає шаблонів",
@@ -169,30 +138,14 @@ const translations = {
         uploadTemplate: "Завантажити шаблон", gitHubRepo: "Репозиторій GitHub", viewInstructions: "Переглянути інструкцію", instructions: "Інструкції",
         hostedAndDeveloped: "Розміщено та розроблено",
 
-        instructions_tldr: "TL;DR: Як це використовувати?",
-        instructions_tldr_edit: "Відредагуйте форму під свої потреби.",
-        instructions_tldr_save: "Збережіть її там, де вам зручно.",
-        instructions_tldr_link: "Використовуйте створене посилання, коли потрібні красиво відформатовані PDF-файли.",
-        instructions_tldr_verify: "Перевіряйте автентичність отриманих PDF за допомогою ключа.",
-
-        instructions_header: "Шапка",
-        instructions_header_title: "Назва: встановлює назву форми та PDF-документу.",
-        instructions_header_artist: "Художник: встановлює ім’я автора форми та PDF-документу.",
-        instructions_header_langs: "Мови: визначає список бажаних мов автора.",
-
-        instructions_fields: "Поля",
-        instructions_fields_short: "Рядок/Текст text створює текстові поля.",
-        instructions_fields_block: "Інфо є вставним блоком текстового опису.",
-        instructions_fields_dynamic: "Список дозволяє заповнювати наявні або створювати нові пункти.",
-        instructions_fields_single: "Один select дозволяє вибрати один варіант. Блокування фіксує обраний варіант.",
-        instructions_fields_multi: "Кілька select дозволяє вибрати кілька варіантів. Блокування забороняє змінювати стан окремих пунктів.",
-        instructions_fields_images: "Зображення дозволяють додавати зображення у PDF-документ.",
-        instructions_fields_agreement: "Згода вимагає підтвердження згоди з умовами. «Клікнути» робить відкриття посилання обов'язковим.",
-
-        instructions_saving: "Збереження",
-        instructions_saving_browser: "Є два способи зберегти форму: у браузері або на пристрої.",
-        instructions_saving_browser_desc: "Збереження у браузері зберігає шаблони локально. Вони не синхронізуються між пристроями. Щоб відкрити їх, натисніть «Мої шаблони».",
-        instructions_saving_file_desc: "Збереження на комп'ютер створює файл .json з даними. Його можна завантажити через «Завантажити шаблон».",
+        short_text_tip: "Поле короткого тексту використовується для введення користувачем невеликого тексту у форму.",
+        long_text_tip: "Поле довгого тексту використовується для введення користувачем великого тексту у форму.",
+        dynamic_list_tip: "Поле динамічного списку використовується, щоб користувач міг додавати та заповнювати поля з різними мітками.",
+        single_select_tip: "Поле одного вибору дозволяє користувачу обрати один варіант із запропонованих.",
+        multi_select_tip: "Поле множинного вибору дозволяє користувачу обрати кілька варіантів із запропонованих.",
+        file_tip: "Поле завантаження файлів дозволяє користувачу прикріплювати зображення до створюваного PDF файлу.",
+        info_text_tip: "Текстовий блок використовується для відображення інформації у формі та не приймає введення від користувача.",
+        consent_tip: "Поле згоди використовується для відображення інформації у формі та вимагає підтвердження користувачем при необхідності."
     }
 };
 
@@ -406,6 +359,8 @@ const BuilderFieldCard = ({
     onPresetSelection // New Handler for selecting values in builder
 }) => {
 
+    const [tipState, setTipState] = useState(false)
+
     const isSelect = field.type === 'single_select' || field.type === 'multi_select';
 
     return (
@@ -418,7 +373,20 @@ const BuilderFieldCard = ({
                 <div className="flex-1 space-y-4">
                     <div className="flex gap-3">
                         <div className="flex-1">
-                            <label className="text-xs text-gray-500 font-mono uppercase mb-1 block">{field.type === 'info_text' ? t('contentContent') : t('fieldLabel')}</label>
+                            <label className="text-xs text-gray-500 font-mono uppercase mb-1 block">{field.type === 'info_text' ? t('contentContent') : t('fieldLabel')} <span className="relative inline-block">
+                                <CircleQuestionMark
+                                    size={16}
+                                    className='inline cursor-pointer hover:text-white'
+                                    onMouseOver={() => setTipState(true)}
+                                    onMouseOut={() => setTipState(false)}
+                                />
+
+                                {tipState && (
+                                    <span className="absolute bottom-full px-2 py-1 bg-gray-800 text-white border border-gray-700 rounded w-max max-w-[300px] normal-case text-base text-center">
+                                        {t(field.type + "_tip")}
+                                    </span>
+                                )}
+                            </span></label>
                             <input type="text" value={field.label} onChange={(e) => onUpdate(field.id, 'label', e.target.value)} className="w-full bg-gray-900 border border-gray-700 rounded-md px-3 py-2 text-sm focus:border-blue-500 outline-none" />
                         </div>
                         <div className="flex items-end gap-1 mt-6">
@@ -729,70 +697,6 @@ const PreviewFieldRenderer = ({
     );
 };
 
-//region instructions menu
-const InstructionsOverlay = ({
-    show, onClose, t
-}) => {
-    if (!show) return null
-
-    return (
-        <div>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
-                <div className="bg-gray-800 border border-gray-700 rounded-xl w-full max-w-[700px] shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()} >
-                    <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-                        <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                            <InfoIcon className="text-blue-400" size={20} /> {t("instructions")}
-                        </h3>
-                        <button onClick={onClose} className="text-gray-400 hover:text-white">
-                            <X size={20} />
-                        </button>
-                    </div>
-
-                    <div className='p-4 flex flex-col gap-3'>
-                        {/* TLDR */}
-                        <div>
-                            <div className='font-bold text-2xl'>{t('instructions_tldr')}</div>
-                            <div>{t('instructions_tldr_edit')}</div>
-                            <div>{t('instructions_tldr_save')}</div>
-                            <div>{t('instructions_tldr_link')}</div>
-                            <div>{t('instructions_tldr_verify')}</div>
-                        </div>
-
-                        {/* Header */}
-                        <div>
-                            <div className='font-bold text-2xl'>{t('instructions_header')}</div>
-                            <div>{t('instructions_header_title')}</div>
-                            <div>{t('instructions_header_artist')}</div>
-                            <div>{t('instructions_header_langs')}</div>
-                        </div>
-
-                        {/* Fields */}
-                        <div>
-                            <div className='font-bold text-2xl'>{t('instructions_fields')}</div>
-                            <div>{t('instructions_fields_short')}</div>
-                            <div>{t('instructions_fields_block')}</div>
-                            <div>{t('instructions_fields_dynamic')}</div>
-                            <div>{t('instructions_fields_single')}</div>
-                            <div>{t('instructions_fields_multi')}</div>
-                            <div>{t('instructions_fields_images')}</div>
-                            <div>{t('instructions_fields_agreement')}</div>
-                        </div>
-
-                        {/* Saving */}
-                        <div>
-                            <div className='font-bold text-2xl'>{t('instructions_saving')}</div>
-                            <div>{t('instructions_saving_browser')}</div>
-                            <div><Globe size={16} className='inline' /> {t('instructions_saving_browser_desc')}</div>
-                            <div><Download size={16} className='inline' /> {t('instructions_saving_file_desc')}</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    )
-}
-
 //region App
 const App = () => {
     const getBrowserLang = () => {
@@ -815,7 +719,7 @@ const App = () => {
     const [headerInfo, setHeaderInfo] = useState({ title: 'Comission template', artist: 'Jane doe', preferredLanguages: ['en'] });
     const [fields, setFields] = useState([
         { id: '1', type: 'short_text', label: 'Your name', value: '', displayStyle: 'default', options: [], isLocked: false, isRequired: true },
-        { id: '6', type: 'dynamic_list', label: 'Contacts', value: [{ id: 'def1', key: 'Telegram', text: '' }, { id: 'def2', key: 'Email', text: '' }], displayStyle: 'default', options: [], isLocked: false, isRequired: true },
+        { id: '6', type: 'dynamic_list', label: 'Contacts', value: [{ id: '1', key: 'Email', text: '' }], displayStyle: 'default', options: [], isLocked: false, isRequired: true },
         { id: '2', type: 'long_text', label: 'Your idea', value: '', displayStyle: 'default', options: [], isLocked: false, isRequired: true },
         { id: '3', type: 'single_select', label: 'Format', value: 'head', displayStyle: 'buttons', options: [{ id: 'opt1', label: 'Head', value: 'head' }, { id: 'opt2', label: 'Half', value: 'half' }, { id: 'opt3', label: 'Full', value: 'full' }], isLocked: false, isRequired: true },
         { id: '4', type: 'single_select', label: 'Complexity', value: 'sketch', displayStyle: 'buttons', options: [{ id: 'opt1', label: 'Sketch', value: 'sketch' }, { id: 'opt2', label: 'Flat color', value: 'flat' }, { id: 'opt3', label: 'Full render', value: 'render' }], isLocked: false, isRequired: true },
@@ -829,7 +733,6 @@ const App = () => {
     const [showTemplateMenu, setShowTemplateMenu] = useState(false);
     const [showTemplateUploadMenu, setShowTemplateUploadMenu] = useState(false);
     const [viewMode, setViewMode] = useState(false);
-    const [showInstructionsOverlay, setshowInstructionsOverlay] = useState(false)
 
     const activeColorHex = themeColor === 'custom' ? customColor : { purple: '#9333ea', blue: '#2563eb', emerald: '#059669', rose: '#e11d48', amber: '#d97706' }[themeColor];
 
@@ -1198,7 +1101,6 @@ const App = () => {
     //region App struct
     return (
         <div className="min-h-screen bg-gray-900 text-gray-100 font-sans selection:bg-gray-700 relative flex flex-col">
-            <InstructionsOverlay show={showInstructionsOverlay} onClose={() => setshowInstructionsOverlay(false)} t={t} />
             <TemplateMenu show={showTemplateMenu} onClose={() => setShowTemplateMenu(false)} savedTemplates={savedTemplates} onLoad={loadTemplate} onDelete={deleteTemplate} t={t} onFileDownload={handleSaveToFile} />
             <TemplateUploadMenu show={showTemplateUploadMenu} onClose={() => setShowTemplateUploadMenu(false)} onFileUpload={loadTemplate} t={t} />
             <Header lang={lang} changeLanguage={changeLanguage} t={t} isCopied={isCopied} handleShareLink={handleShareLink} handleSaveToStorage={handleSaveToStorage} handleSaveToFile={handleSaveToFile} setShowTemplateMenu={setShowTemplateMenu} setShowTemplateUploadMenu={setShowTemplateUploadMenu} viewMode={viewMode} themeStyles={themeStyles} isSaved={isSaved} />
@@ -1350,9 +1252,6 @@ const App = () => {
                 <a href="https://github.com/Vide0Master/art-form" className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-300 hover:bg-gray-800 border border-transparent hover:border-gray-700 whitespace-nowrap">
                     <Github size={18} /><span className="hidden sm:inline">{t('gitHubRepo')}</span>
                 </a>
-                <button onClick={() => setshowInstructionsOverlay(true)} className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-300 hover:bg-gray-800 border border-transparent hover:border-gray-700 whitespace-nowrap">
-                    <InfoIcon size={18} /><span className="hidden sm:inline">{t('viewInstructions')}</span>
-                </button>
             </footer>
         </div>
     );
