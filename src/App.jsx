@@ -1337,7 +1337,7 @@ const App = () => {
                 </section>
             </main>
 
-            <footer className='p-2 flex flex-row items-center gap-4 justify-center'>
+            <footer className='pb-8 flex flex-row items-center gap-4 justify-center'>
                 <div className="bg-black p-2 flex flex-col gap-1 h-fit font-bold content-stretch shadow-md shadow-black">
                     <div className="h-fit">
                         <span>{t('hostedAndDeveloped')} </span>
