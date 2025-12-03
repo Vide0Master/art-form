@@ -8,12 +8,14 @@ import {
     Download,
     InfoIcon,
     Github,
-    CircleQuestionMark
+    Calculator,
+    Coins,
+    CircleQuestionMark,
 } from 'lucide-react';
 import LZString from 'lz-string';
+
 import { jsPDF } from 'jspdf';
 import FontUrl from "./Bahnschrift.ttf"
-
 
 const AVAILABLE_LANGS = [
     { code: 'en', label: 'English' },
@@ -59,6 +61,14 @@ const translations = {
         uploadTemplate: "Upload template", gitHubRepo: "GitHub repository", viewInstructions: "View instructions", instructions: "Instructions",
         hostedAndDeveloped: "Hosted and developed by",
 
+        // Calculator Translations
+        calcLabel: "Price Calculator", enableCalc: "Enable Calculator",
+        basePrice: "Base Price", currencySym: "Currency Symbol",
+        modifier: "Price Modifier", totalPrice: "Total Price",
+        modLabelShort: "Modifier",
+        modTip: "Syntax: 100 (set base), +10 (add), -10 (sub), *2 (mul base), **2 (mul current), /2 (div base), //2 (div current), %50 (+50% base), %%50 (+50% current)",
+        shortCalcTip: "Field will accept numbers only (Quantity).",
+
         short_text_tip: "Short text field is used to allow users to input small text into the form.",
         long_text_tip: "Long text field is used to allow users to input large text into the form.",
         dynamic_list_tip: "Dynamic list field is used to allow users to manually add and fill differently labeled text fields.",
@@ -99,13 +109,21 @@ const translations = {
         uploadTemplate: "Загрузить шаблон", gitHubRepo: "Репозиторий GitHub", viewInstructions: "Смотреть инструкцию", instructions: "Инструкция",
         hostedAndDeveloped: "Размещено и разработано",
 
+        // Calculator Translations
+        calcLabel: "Калькулятор цен", enableCalc: "Включить калькулятор",
+        basePrice: "Базовая цена", currencySym: "Символ валюты",
+        modifier: "Модификатор цены", totalPrice: "Итоговая цена",
+        modLabelShort: "Модификатор",
+        modTip: "Синтаксис: 100 (установить базу), +10 (прибавить), -10 (отнять), *2 (умн. базу), **2 (умн. текущ), /2 (дел. базу), //2 (дел. текущ), %50 (+50% от базы), %%50 (+50% от текущ)",
+        shortCalcTip: "Поле будет принимать только числа (как количество).",
+
         short_text_tip: "Поле короткого текста используется для ввода пользователем небольшого текста в форму.",
         long_text_tip: "Поле длинного текста используется для ввода пользователем большого текста в форму.",
         dynamic_list_tip: "Поле динамического списка используется для того, чтобы пользователь мог добавлять и заполнять поля с разными метками.",
         single_select_tip: "Поле одиночного выбора позволяет пользователю выбрать один вариант из предложенных.",
         multi_select_tip: "Поле множественного выбора позволяет пользователю выбрать несколько вариантов из предложенных.",
         file_tip: "Поле загрузки файлов позволяет пользователю прикреплять изображения к создаваемому PDF файлу.",
-        info_text_tip: "Текстовый блок используется для отображения информации в форме и не принимает ввод от пользователя.",
+        info_text_tip: "Текстовий блок використовується для відображення інформації у формі та не приймає введення від користувача.",
         consent_tip: "Поле согласия используется для отображения информации в форме и требует подтверждения пользователем при необходимости."
     },
     uk: {
@@ -124,7 +142,7 @@ const translations = {
         optionLabel: "Опція", fileUpload: "Завантаження",
         typeShort: "Рядок", typeLong: "Текст", typeDynamic: "Список", typeSingle: "Один",
         typeMulti: "Кілька", typeImages: "Зображення", typeConsent: "Згода", typeInfo: "Інфо",
-        formPreview: "Перегляд", livePreview: "Живий перегляд", submitPreview: "Відправити",
+        formPreview: "Перегляд", livePreview: "Живой перегляд", submitPreview: "Відправити",
         downloadPdf: "Скачати PDF", uploadDisabled: "Завантаження вимк.", clickToUpload: "Завантажити",
         noImages: "Немає зображень", requiredField: "Обов'язково", requiredOpenLink: "Потрібно відкрити посилання",
         openDoc: "Відкрити", langsLabel: "Мови:", wantOwn: "Хочете таку анкету?",
@@ -137,6 +155,14 @@ const translations = {
         lockTip: "Замок фіксує стан", saveToBrowser: "Зберегти у браузері", saveToFile: "Зберегти на комп'ютері",
         uploadTemplate: "Завантажити шаблон", gitHubRepo: "Репозиторій GitHub", viewInstructions: "Переглянути інструкцію", instructions: "Інструкції",
         hostedAndDeveloped: "Розміщено та розроблено",
+
+        // Calculator Translations
+        calcLabel: "Калькулятор цін", enableCalc: "Увімкнути калькулятор",
+        basePrice: "Базова ціна", currencySym: "Символ валюти",
+        modifier: "Модифікатор ціни", totalPrice: "Загальна ціна",
+        modLabelShort: "Модифікатор",
+        modTip: "Синтаксис: 100 (встановити базу), +10 (додати), -10 (відняти), *2 (помн. базу), **2 (помн. поточну), /2 (діл. базу), //2 (діл. поточну), %50 (+50% від бази), %%50 (+50% від поточної)",
+        shortCalcTip: "Поле прийматиме лише числа (як кількість).",
 
         short_text_tip: "Поле короткого тексту використовується для введення користувачем невеликого тексту у форму.",
         long_text_tip: "Поле довгого тексту використовується для введення користувачем великого тексту у форму.",
@@ -163,6 +189,21 @@ const generateHashID = (str) => {
         hash = hash & hash;
     }
     return Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+};
+
+// Helper function to load script
+const loadScript = (src) => {
+    return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) {
+            resolve();
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
 };
 
 //region header
@@ -220,7 +261,6 @@ function SaveDropdown({
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
 
-    // закрытие кликом вне
     useEffect(() => {
         const handler = (e) => {
             if (ref.current && !ref.current.contains(e.target)) {
@@ -350,16 +390,17 @@ const TemplateUploadMenu = ({ show, onClose, onFileUpload, t }) => {
 
 //region field configurator
 const BuilderFieldCard = ({
-    field, index, totalFields, t,
+    field, index, totalFields, t, isCalcEnabled,
     onUpdate, onRemove, onMoveUp, onMoveDown,
     onAddOption, onUpdateOption, onRemoveOption,
     onAddListItem, onUpdateListItem, onRemoveListItem,
     onAddConsent, onUpdateConsent, onRemoveConsent,
-    onToggleOptionLock, // New Handler
-    onPresetSelection // New Handler for selecting values in builder
+    onToggleOptionLock,
+    onPresetSelection
 }) => {
 
     const [tipState, setTipState] = useState(false)
+    const [calcTipState, setCalcTipState] = useState(false)
 
     const isSelect = field.type === 'single_select' || field.type === 'multi_select';
 
@@ -380,9 +421,8 @@ const BuilderFieldCard = ({
                                     onMouseOver={() => setTipState(true)}
                                     onMouseOut={() => setTipState(false)}
                                 />
-
                                 {tipState && (
-                                    <span className="absolute bottom-full px-2 py-1 bg-gray-800 text-white border border-gray-700 rounded w-max max-w-[300px] normal-case text-base text-center">
+                                    <span className="absolute bottom-full z-10 px-2 py-1 bg-gray-800 text-white border border-gray-700 rounded w-max max-w-[300px] normal-case text-base text-center">
                                         {t(field.type + "_tip")}
                                     </span>
                                 )}
@@ -393,13 +433,25 @@ const BuilderFieldCard = ({
                             {field.type !== 'info_text' && (
                                 <button onClick={() => onUpdate(field.id, 'isRequired', !field.isRequired)} className={`p-2 rounded-md border ${field.isRequired ? 'bg-red-900/30 border-red-600 text-red-400' : 'bg-gray-900 border-gray-700 text-gray-500'}`} title={field.isRequired ? t('makeOptional') : t('makeRequired')}><Asterisk size={18} /></button>
                             )}
-                            {/* Hide global lock for select types as requested */}
                             {!isSelect && (
                                 <button onClick={() => onUpdate(field.id, 'isLocked', !field.isLocked)} className={`p-2 rounded-md border ${field.isLocked ? 'bg-amber-900/30 border-amber-600 text-amber-400' : 'bg-gray-900 border-gray-700 text-gray-500'}`} title={field.isLocked ? t('unlock') : t('lock')}>{field.isLocked ? <Lock size={18} /> : <Unlock size={18} />}</button>
                             )}
                             <button onClick={() => onRemove(field.id)} className="p-2 rounded-md bg-gray-900 border border-transparent hover:border-red-800 text-gray-500 hover:text-red-400" title={t('deleteField')}><Trash2 size={18} /></button>
                         </div>
                     </div>
+
+                    {isCalcEnabled && field.type === 'short_text' && (
+                        <div className="bg-emerald-900/10 border border-emerald-900/30 p-2 rounded-lg">
+                            <div className="flex justify-between items-center mb-1">
+                                <label className="text-xs text-emerald-500 font-mono uppercase">{t('modLabelShort')}</label>
+                                <div className="relative">
+                                    <CircleQuestionMark size={14} className="text-emerald-500 cursor-help" onMouseEnter={() => setCalcTipState(true)} onMouseLeave={() => setCalcTipState(false)} />
+                                    {calcTipState && <div className="absolute right-0 bottom-full mb-1 w-64 p-2 bg-gray-900 border border-gray-700 rounded text-xs text-gray-300 z-20 shadow-xl">{t('modTip')} {t('shortCalcTip')}</div>}
+                                </div>
+                            </div>
+                            <input type="text" value={field.priceModifier || ''} onChange={(e) => onUpdate(field.id, 'priceModifier', e.target.value)} className="w-full bg-gray-900 border border-emerald-800/50 rounded px-2 py-1 text-sm text-emerald-400 focus:outline-none focus:border-emerald-500" />
+                        </div>
+                    )}
 
                     <div className="bg-gray-900/50 p-3 rounded-lg border border-gray-800">
                         {field.type === 'consent' && (
@@ -459,38 +511,56 @@ const BuilderFieldCard = ({
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center mb-2">
                                     <label className="text-xs text-gray-500 font-mono uppercase">{t('optionsLabel')}</label>
-                                    <div className="flex bg-gray-800 p-0.5 rounded-lg border border-gray-700">
-                                        <button onClick={() => onUpdate(field.id, 'displayStyle', 'default')} className={`px-2 py-1 rounded text-[10px] ${field.displayStyle === 'default' ? 'bg-gray-600 text-white' : 'text-gray-500'}`}>{t('list')}</button>
-                                        <button onClick={() => onUpdate(field.id, 'displayStyle', 'buttons')} className={`px-2 py-1 rounded text-[10px] ${field.displayStyle === 'buttons' ? 'bg-gray-600 text-white' : 'text-gray-500'}`}>{t('buttons')}</button>
+                                    <div className="flex gap-2">
+                                        {isCalcEnabled && (
+                                            <div className="relative group/help">
+                                                <CircleQuestionMark size={14} className="text-emerald-500 cursor-help" />
+                                                <div className="hidden group-hover/help:block absolute right-0 bottom-full mb-1 w-64 p-2 bg-gray-900 border border-gray-700 rounded text-xs text-gray-300 z-20 shadow-xl">{t('modTip')}</div>
+                                            </div>
+                                        )}
+                                        <div className="flex bg-gray-800 p-0.5 rounded-lg border border-gray-700">
+                                            <button onClick={() => onUpdate(field.id, 'displayStyle', 'default')} className={`px-2 py-1 rounded text-[10px] ${field.displayStyle === 'default' ? 'bg-gray-600 text-white' : 'text-gray-500'}`}>{t('list')}</button>
+                                            <button onClick={() => onUpdate(field.id, 'displayStyle', 'buttons')} className={`px-2 py-1 rounded text-[10px] ${field.displayStyle === 'buttons' ? 'bg-gray-600 text-white' : 'text-gray-500'}`}>{t('buttons')}</button>
+                                        </div>
                                     </div>
                                 </div>
                                 {field.options.map((opt) => {
-                                    // Check if selected in builder (to reflect state for multi)
                                     const isSelected = Array.isArray(field.value) ? field.value.includes(opt.value) : field.value === opt.value;
 
                                     return (
-                                        <div key={opt.id} className="flex gap-2 items-center">
-                                            {/* Selection Control in Builder */}
-                                            <div
-                                                onClick={() => onPresetSelection(field.id, opt.value, field.type === 'multi_select')}
-                                                className={`w-5 h-5 rounded border flex items-center justify-center cursor-pointer ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-600 bg-gray-900'} ${field.type === 'single_select' ? 'rounded-full' : 'rounded-md'}`}
-                                                title="Preset/Select default value"
-                                            >
-                                                {isSelected && <div className={`bg-white ${field.type === 'single_select' ? 'w-2 h-2 rounded-full' : 'w-3 h-3 rounded-sm'}`} />}
+                                        <div key={opt.id} className="flex flex-col gap-1 bg-gray-800/50 p-1.5 rounded border border-gray-700/50">
+                                            <div className="flex gap-2 items-center">
+                                                <div
+                                                    onClick={() => onPresetSelection(field.id, opt.value, field.type === 'multi_select')}
+                                                    className={`w-5 h-5 rounded border flex items-center justify-center cursor-pointer ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-600 bg-gray-900'} ${field.type === 'single_select' ? 'rounded-full' : 'rounded-md'}`}
+                                                    title="Preset/Select default value"
+                                                >
+                                                    {isSelected && <div className={`bg-white ${field.type === 'single_select' ? 'w-2 h-2 rounded-full' : 'w-3 h-3 rounded-sm'}`} />}
+                                                </div>
+
+                                                <input type="text" value={opt.label} onChange={(e) => onUpdateOption(field.id, opt.id, 'label', e.target.value)} className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gray-500" />
+
+                                                <button
+                                                    onClick={() => onToggleOptionLock(field.id, opt.id)}
+                                                    className={`p-1.5 rounded border transition-colors ${opt.isLocked ? 'bg-amber-900/30 border-amber-600 text-amber-400' : 'border-gray-700 text-gray-500 hover:text-gray-300'}`}
+                                                    title={t('lockTip')}
+                                                >
+                                                    {opt.isLocked ? <Lock size={14} /> : <Unlock size={14} />}
+                                                </button>
+
+                                                <button onClick={() => onRemoveOption(field.id, opt.id)} className="text-gray-500 hover:text-red-400 px-2"><X size={16} /></button>
                                             </div>
-
-                                            <input type="text" value={opt.label} onChange={(e) => onUpdateOption(field.id, opt.id, e.target.value)} className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gray-500" />
-
-                                            {/* Individual Lock */}
-                                            <button
-                                                onClick={() => onToggleOptionLock(field.id, opt.id)}
-                                                className={`p-1.5 rounded border transition-colors ${opt.isLocked ? 'bg-amber-900/30 border-amber-600 text-amber-400' : 'border-gray-700 text-gray-500 hover:text-gray-300'}`}
-                                                title={t('lockTip')}
-                                            >
-                                                {opt.isLocked ? <Lock size={14} /> : <Unlock size={14} />}
-                                            </button>
-
-                                            <button onClick={() => onRemoveOption(field.id, opt.id)} className="text-gray-500 hover:text-red-400 px-2"><X size={16} /></button>
+                                            {isCalcEnabled && (
+                                                <div className="flex items-center gap-2 pl-7">
+                                                    <span className="text-xs text-emerald-500 font-mono">{t('modLabelShort')}:</span>
+                                                    <input
+                                                        type="text"
+                                                        value={opt.priceModifier || ''}
+                                                        onChange={(e) => onUpdateOption(field.id, opt.id, 'priceModifier', e.target.value)}
+                                                        className="flex-1 bg-gray-900 border border-emerald-900/50 rounded px-2 py-0.5 text-xs text-emerald-400 focus:border-emerald-500 outline-none"
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     )
                                 })}
@@ -522,8 +592,19 @@ const BuilderFieldCard = ({
 const PreviewFieldRenderer = ({
     field, viewMode, themeStyles, t,
     onValueChange, onDynamicItemChange, onDynamicItemRemove, onDynamicItemAdd,
-    onFileUpload, onFileRemove, onLinkClick
+    onFileUpload, onFileRemove, onLinkClick,
+    isCalcEnabled, currencySym, getOptionPriceDiff
 }) => {
+
+    const renderPriceHint = (diff) => {
+        if (!isCalcEnabled || diff === undefined || diff === null) return null;
+        // Format +$10 or -$10
+        const sign = diff > 0 ? '+' : (diff < 0 ? '-' : '');
+        const absDiff = Math.abs(diff);
+        const colorClass = diff > 0 ? 'text-emerald-600' : (diff < 0 ? 'text-rose-500' : 'text-gray-400');
+
+        return <span className={`${colorClass} font-mono text-xs ml-1 font-bold opacity-80`}>{sign}{currencySym}{absDiff}</span>;
+    };
 
     if (field.type === 'info_text') {
         return (
@@ -539,11 +620,20 @@ const PreviewFieldRenderer = ({
             <label className="block text-sm font-bold text-gray-700">
                 {field.label || 'Untitled'}
                 {field.isRequired && <span className="text-red-500 ml-1" title={t('requiredField')}>*</span>}
-                {/* Global lock icon removed for Selects, shown only for simple fields */}
                 {field.isLocked && (field.type !== 'single_select' && field.type !== 'multi_select') && <Lock size={12} className="inline ml-1 text-amber-500 mb-1" />}
             </label>
 
-            {field.type === 'short_text' && <input type="text" required={field.isRequired} disabled={field.isLocked} value={field.value} onChange={(e) => onValueChange(field.id, e.target.value)} className={`w-full border rounded-lg px-4 py-2.5 transition-all ${field.isLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200' : 'bg-white border-gray-300 focus:ring-2 focus:ring-offset-1 focus:border-transparent invalid:border-red-400 invalid:ring-red-400'}`} style={!field.isLocked ? themeStyles.ringStyle : {}} />}
+            {field.type === 'short_text' && (
+                <input
+                    type={isCalcEnabled && field.priceModifier ? "number" : "text"}
+                    required={field.isRequired}
+                    disabled={field.isLocked}
+                    value={field.value}
+                    onChange={(e) => onValueChange(field.id, e.target.value)}
+                    className={`w-full border rounded-lg px-4 py-2.5 transition-all ${field.isLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200' : 'bg-white border-gray-300 focus:ring-2 focus:ring-offset-1 focus:border-transparent invalid:border-red-400 invalid:ring-red-400'}`}
+                    style={!field.isLocked ? themeStyles.ringStyle : {}}
+                />
+            )}
 
             {field.type === 'long_text' && <textarea required={field.isRequired} disabled={field.isLocked} value={field.value} onChange={(e) => onValueChange(field.id, e.target.value)} rows={3} className={`w-full border rounded-lg px-4 py-2.5 transition-all resize-none ${field.isLocked ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200' : 'bg-white border-gray-300 focus:ring-2 focus:ring-offset-1 focus:border-transparent invalid:border-red-400'}`} style={!field.isLocked ? themeStyles.ringStyle : {}} />}
 
@@ -554,20 +644,24 @@ const PreviewFieldRenderer = ({
                             <select
                                 required={field.isRequired}
                                 value={field.value}
-                                // Disable main select only if selected option is locked? 
-                                // Logic: If current selection is locked, can't change.
-                                // OR if user tries to pick another one, it might be restricted.
-                                // For simple HTML select, best to just disable if current selection is locked.
                                 disabled={field.options.find(o => o.value === field.value)?.isLocked}
                                 onChange={(e) => onValueChange(field.id, e.target.value)}
                                 className={`w-full border rounded-lg px-4 py-2.5 appearance-none bg-white border-gray-300 disabled:bg-gray-100 disabled:text-gray-500`}
                                 style={themeStyles.ringStyle}
                             >
                                 <option value="">Select...</option>
-                                {field.options.map(o => (
-                                    // We can disable specific options in dropdown too if needed, but keeping it simple
-                                    <option key={o.id} value={o.value}>{o.label} {o.isLocked ? '(Locked)' : ''}</option>
-                                ))}
+                                {field.options.map(o => {
+                                    const diff = isCalcEnabled ? getOptionPriceDiff(field.id, o.value, false) : null;
+                                    const sign = diff > 0 ? '+' : (diff < 0 ? '-' : '');
+                                    const diffText = diff !== null ? ` [${sign}${currencySym}${Math.abs(diff)}]` : '';
+
+                                    return (
+                                        <option key={o.id} value={o.value}>
+                                            {o.label} {o.isLocked ? '(Locked)' : ''}
+                                            {diffText}
+                                        </option>
+                                    )
+                                })}
                             </select>
                             <div className="absolute right-4 top-3.5 pointer-events-none text-gray-400"><List size={16} /></div>
                         </div>
@@ -576,19 +670,24 @@ const PreviewFieldRenderer = ({
                         <div className="flex flex-wrap gap-2">
                             {field.options.map(o => {
                                 const isSelected = field.value === o.value;
-                                // const isDisabled = o.isLocked && !isSelected; // Cannot select if locked by someone else? No, instruction says "lock selects THIS option".
-                                // Actually, if Single Select: "Clicking lock selects THIS option and blocks change".
-                                // So if ANY option is locked, the whole field is effectively frozen on that option.
                                 const isFieldLocked = field.options.some(opt => opt.isLocked);
+                                const diff = isCalcEnabled ? getOptionPriceDiff(field.id, o.value, false) : null;
 
                                 return (
                                     <div
                                         key={o.id}
                                         onClick={() => !isFieldLocked && onValueChange(field.id, o.value)}
-                                        className={`px-4 py-2 rounded-lg border text-sm font-medium cursor-pointer transition-all ${isSelected ? 'text-white border-transparent shadow-md' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'} ${isFieldLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        className={`px-4 py-3 rounded-lg border text-base font-medium cursor-pointer transition-all ${isSelected ? 'text-white border-transparent shadow-md' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'} ${isFieldLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         style={isSelected ? { backgroundColor: themeStyles.activeColor } : {}}
                                     >
-                                        {o.label} {o.isLocked && <Lock size={10} className="inline ml-1" />}
+                                        <div className="flex flex-col items-center">
+                                            <span className="flex items-center gap-1">{o.label} {o.isLocked && <Lock size={10} />}</span>
+                                            {diff !== null && (
+                                                <span className={`text-xs font-mono font-bold ${isSelected ? 'text-white/90' : (diff > 0 ? 'text-emerald-600' : (diff < 0 ? 'text-rose-500' : 'text-gray-400'))}`}>
+                                                    {diff > 0 ? '+' : (diff < 0 ? '-' : '')}{currencySym}{Math.abs(diff)}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 );
                             })}
@@ -604,9 +703,15 @@ const PreviewFieldRenderer = ({
                             {field.options.map(o => {
                                 const currentValues = Array.isArray(field.value) ? field.value : [];
                                 const isChecked = currentValues.includes(o.value);
+                                const diff = isCalcEnabled ? getOptionPriceDiff(field.id, o.value, true) : null;
+
                                 return (
-                                    <label key={o.id} className={`flex items-center gap-2 text-sm ${o.isLocked ? 'cursor-not-allowed text-gray-400' : 'cursor-pointer text-gray-700'}`}>
-                                        <input type="checkbox" disabled={o.isLocked} checked={isChecked} onChange={() => onValueChange(field.id, o.value, true)} className="rounded border-gray-300 w-4 h-4" style={themeStyles.accentStyle} /> {o.label} {o.isLocked && <Lock size={10} />}
+                                    <label key={o.id} className={`flex items-center justify-between gap-2 text-sm ${o.isLocked ? 'cursor-not-allowed text-gray-400' : 'cursor-pointer text-gray-700'}`}>
+                                        <div className="flex items-center gap-2">
+                                            <input type="checkbox" disabled={o.isLocked} checked={isChecked} onChange={() => onValueChange(field.id, o.value, true)} className="rounded border-gray-300 w-4 h-4" style={themeStyles.accentStyle} />
+                                            {o.label} {o.isLocked && <Lock size={10} />}
+                                        </div>
+                                        {renderPriceHint(diff)}
                                     </label>
                                 );
                             })}
@@ -617,14 +722,21 @@ const PreviewFieldRenderer = ({
                             {field.options.map((o) => {
                                 const currentValues = Array.isArray(field.value) ? field.value : [];
                                 const isSelected = currentValues.includes(o.value);
+                                const diff = isCalcEnabled ? getOptionPriceDiff(field.id, o.value, true) : null;
+
                                 return (
                                     <div
                                         key={o.id}
                                         onClick={() => !o.isLocked && onValueChange(field.id, o.value, true)}
-                                        className={`px-3 py-2 rounded-md border text-sm font-medium cursor-pointer transition-all select-none flex items-center gap-2 ${isSelected ? 'text-white border-transparent shadow-md' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'} ${o.isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        className={`px-4 py-3 rounded-md border text-base font-medium cursor-pointer transition-all select-none flex flex-col items-center justify-center gap-0.5 ${isSelected ? 'text-white border-transparent shadow-md' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'} ${o.isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         style={isSelected ? { backgroundColor: themeStyles.activeColor } : {}}
                                     >
-                                        {o.label} {o.isLocked && <Lock size={10} />}
+                                        <span className="flex items-center gap-1">{o.label} {o.isLocked && <Lock size={10} />}</span>
+                                        {diff !== null && (
+                                            <span className={`text-xs font-mono font-bold ${isSelected ? 'text-white/90' : (diff > 0 ? 'text-emerald-600' : (diff < 0 ? 'text-rose-500' : 'text-gray-400'))}`}>
+                                                {diff > 0 ? '+' : (diff < 0 ? '-' : '')}{currencySym}{Math.abs(diff)}
+                                            </span>
+                                        )}
                                     </div>
                                 );
                             })}
@@ -716,13 +828,21 @@ const App = () => {
         return text;
     };
 
-    const [headerInfo, setHeaderInfo] = useState({ title: 'Comission template', artist: 'Jane doe', preferredLanguages: ['en'] });
+    const [headerInfo, setHeaderInfo] = useState({
+        title: 'Comission template',
+        artist: 'Jane doe',
+        preferredLanguages: ['en'],
+        isCalcEnabled: false,
+        basePrice: 0,
+        currencySymbol: '$'
+    });
+
     const [fields, setFields] = useState([
         { id: '1', type: 'short_text', label: 'Your name', value: '', displayStyle: 'default', options: [], isLocked: false, isRequired: true },
         { id: '6', type: 'dynamic_list', label: 'Contacts', value: [{ id: '1', key: 'Email', text: '' }], displayStyle: 'default', options: [], isLocked: false, isRequired: true },
         { id: '2', type: 'long_text', label: 'Your idea', value: '', displayStyle: 'default', options: [], isLocked: false, isRequired: true },
-        { id: '3', type: 'single_select', label: 'Format', value: 'head', displayStyle: 'buttons', options: [{ id: 'opt1', label: 'Head', value: 'head' }, { id: 'opt2', label: 'Half', value: 'half' }, { id: 'opt3', label: 'Full', value: 'full' }], isLocked: false, isRequired: true },
-        { id: '4', type: 'single_select', label: 'Complexity', value: 'sketch', displayStyle: 'buttons', options: [{ id: 'opt1', label: 'Sketch', value: 'sketch' }, { id: 'opt2', label: 'Flat color', value: 'flat' }, { id: 'opt3', label: 'Full render', value: 'render' }], isLocked: false, isRequired: true },
+        { id: '3', type: 'single_select', label: 'Format', value: 'head', displayStyle: 'buttons', options: [{ id: 'opt1', label: 'Head', value: 'head', priceModifier: '100' }, { id: 'opt2', label: 'Half', value: 'half', priceModifier: '200' }, { id: 'opt3', label: 'Full', value: 'full', priceModifier: '300' }], isLocked: false, isRequired: true },
+        { id: '4', type: 'single_select', label: 'Complexity', value: 'sketch', displayStyle: 'buttons', options: [{ id: 'opt1', label: 'Sketch', value: 'sketch', priceModifier: '' }, { id: 'opt2', label: 'Flat color', value: 'flat', priceModifier: '+50' }, { id: 'opt3', label: 'Full render', value: 'render', priceModifier: '*2' }], isLocked: false, isRequired: true },
         { id: '5', type: 'file', label: 'Reference Images', value: [], displayStyle: 'default', options: [], isLocked: false, isRequired: false }
     ]);
     const [themeColor, setThemeColor] = useState('purple');
@@ -783,17 +903,119 @@ const App = () => {
         if (loaded) try { setSavedTemplates(JSON.parse(loaded)); } catch { /* empty */ }
     }, []);
 
+    const calculateFieldsTotal = (currentFields) => {
+        if (!headerInfo.isCalcEnabled) return 0;
+        let base = parseFloat(headerInfo.basePrice) || 0;
+        let current = base;
+
+        // Helper to apply modifier
+        const applyMod = (modStr, quantity = 1, direct = false) => {
+            let op = ""
+            let val = 0
+            if (!modStr) return;
+
+            modStr = modStr.trim();
+            const qty = isNaN(parseFloat(quantity)) ? 0 : parseFloat(quantity);
+
+            if (!direct) {
+                const match = modStr.match(/^(\*\*|\/\/|%%|\*|\/|%|\+|-)?(\d+(\.\d+)?)?$/);
+                if (!match) return;
+                op = match[1] || '';
+                val = parseFloat(match[2]);
+            } else {
+                op = modStr
+                val = quantity
+            }
+
+            if (isNaN(val)) return;
+
+            switch (op) {
+                case '': base = val; current = base; break;
+                case '+': current += (val * qty); break;
+                case '-': current -= (val * qty); break;
+                case '*': if (qty > 0) current += base * (val - 1); break;
+                case '**': if (qty > 0) current *= val; break;
+                case '/': if (qty > 0) current -= base * (1 - (1 / val)); break;
+                case '//': if (qty > 0) current /= val; break;
+                case '%': current += (base * (val / 100)) * qty; break;
+                case '%%': current += (current * (val / 100)) * qty; break;
+                default: break;
+            }
+        };
+
+        currentFields.forEach(f => {
+            if (f.type === 'info_text' || f.type === 'file' || f.type === 'dynamic_list' || f.type === 'consent') return;
+            if (f.type === 'short_text' && f.priceModifier) {
+                console.log(f.priceModifier, parseInt(f.value))
+                applyMod(String(f.priceModifier), parseInt(f.value), true);
+            }
+            else if (f.type === 'single_select') {
+                const opt = f.options.find(o => o.value === f.value);
+                if (opt && opt.priceModifier) applyMod(opt.priceModifier, 1);
+            } else if (f.type === 'multi_select') {
+                const vals = Array.isArray(f.value) ? f.value : [];
+                vals.forEach(v => {
+                    const opt = f.options.find(o => o.value === v);
+                    if (opt && opt.priceModifier) applyMod(opt.priceModifier, 1);
+                });
+            }
+        });
+        return current;
+    };
+
+    const calculatePrice = useMemo(() => calculateFieldsTotal(fields), [headerInfo.basePrice, headerInfo.isCalcEnabled, fields]);
+
+    const getOptionPriceDiff = (fieldId, optionValue, isMulti) => {
+        if (!headerInfo.isCalcEnabled) return null;
+
+        // Single Select Logic: Compare (Option Selected) vs (Field Empty)
+        // This shows the absolute "cost" of the option relative to having nothing in that field
+        if (!isMulti) {
+            const tempFields = fields.map(f => {
+                if (f.id !== fieldId) return f;
+                return { ...f, value: optionValue }; // State with THIS option
+            });
+            const totalWithOption = calculateFieldsTotal(tempFields);
+
+            const emptyFields = fields.map(f => {
+                if (f.id !== fieldId) return f;
+                return { ...f, value: '' }; // State with NO option
+            });
+            const totalEmpty = calculateFieldsTotal(emptyFields);
+
+            return totalWithOption - totalEmpty;
+        }
+
+        // Multi Select Logic: Compare (Toggled State) vs (Current State)
+        // This shows the marginal difference (Add/Remove effect)
+        const currentTotal = calculatePrice;
+        const tempFields = fields.map(f => {
+            if (f.id !== fieldId) return f;
+            const currentVals = Array.isArray(f.value) ? f.value : [];
+            let newValue;
+            if (currentVals.includes(optionValue)) {
+                newValue = currentVals.filter(v => v !== optionValue);
+            } else {
+                newValue = [...currentVals, optionValue];
+            }
+            return { ...f, value: newValue };
+        });
+        const newTotal = calculateFieldsTotal(tempFields);
+        return newTotal - currentTotal;
+    };
+
+
     const handleShareLink = () => {
         if (!LZString) { alert(t('alertLibsLoading')); return; }
         const data = {
             headerInfo, fields: fields.map(f => {
-                console.log(f)
                 if (f.type === 'info_text') return { ...f, value: f.value };
                 if (f.type === 'dynamic_list') return { ...f, value: f.value.map(v => ({ ...v, text: '' })) };
                 if (f.type === 'consent') return { ...f, value: [], linkVisited: {} };
                 if (f.type === 'single_select' && f.options.some(v => v.isLocked)) return { ...f }
                 if (f.type === 'multi_select' && f.options.some(v => v.isLocked)) return { ...f }
-                return { ...f, value: (f.type === 'file' ? [] : ''), linkVisited: false };
+                // Clear values for template sharing, unless locked
+                return { ...f, value: (f.type === 'file' ? [] : (f.type === 'short_text' && f.isLocked ? f.value : '')), linkVisited: false };
             }), themeColor, customColor
         };
 
@@ -853,7 +1075,7 @@ const App = () => {
     };
 
     const addField = (type) => {
-        const newF = { id: Date.now().toString(), type, label: type === 'consent' ? t('defAgree') : (type === 'dynamic_list' ? t('defList') : t('defNewField')), value: type === 'multi_select' || type === 'dynamic_list' || type === 'file' || type === 'consent' ? [] : '', displayStyle: 'default', linkUrl: '', requireLinkOpen: false, linkVisited: {}, options: (type === 'single_select' || type === 'multi_select') ? [{ id: Date.now() + '1', label: t('optionLabel') + ' 1', value: 'opt1', isLocked: false }] : [], isLocked: false, isRequired: type === 'consent' };
+        const newF = { id: Date.now().toString(), type, label: type === 'consent' ? t('defAgree') : (type === 'dynamic_list' ? t('defList') : t('defNewField')), value: type === 'multi_select' || type === 'dynamic_list' || type === 'file' || type === 'consent' ? [] : '', displayStyle: 'default', linkUrl: '', requireLinkOpen: false, linkVisited: {}, options: (type === 'single_select' || type === 'multi_select') ? [{ id: Date.now() + '1', label: t('optionLabel') + ' 1', value: 'opt1', isLocked: false, priceModifier: '' }] : [], isLocked: false, isRequired: type === 'consent', priceModifier: '' };
         if (type === 'dynamic_list') newF.value = [{ id: Date.now() + 'dl', key: t('itemName'), text: '' }];
         if (type === 'consent') newF.options = [{ id: Date.now() + 'c1', label: t('checkboxText'), link: '', requireOpen: false }];
         setFields([...fields, newF]);
@@ -870,8 +1092,8 @@ const App = () => {
         setFields(fields.map(f => {
             if (f.id !== fieldId) return f;
             if (type === 'option') {
-                if (action === 'add') return { ...f, options: [...f.options, { id: Date.now().toString(), label: `${t('optionLabel')} ${f.options.length + 1}`, value: `opt${Date.now()}`, isLocked: false }] };
-                if (action === 'update') return { ...f, options: f.options.map(o => o.id === payload.id ? { ...o, label: payload.val } : o) };
+                if (action === 'add') return { ...f, options: [...f.options, { id: Date.now().toString(), label: `${t('optionLabel')} ${f.options.length + 1}`, value: `opt${Date.now()}`, isLocked: false, priceModifier: '' }] };
+                if (action === 'update') return { ...f, options: f.options.map(o => o.id === payload.id ? { ...o, [payload.prop]: payload.val } : o) };
                 if (action === 'remove') return { ...f, options: f.options.filter(o => o.id !== payload.id) };
             }
             if (type === 'list') {
@@ -889,7 +1111,7 @@ const App = () => {
     };
 
     const addOption = (fid) => modifySubItem('option', fid, 'add');
-    const updateOption = (fid, oid, val) => modifySubItem('option', fid, 'update', { id: oid, val });
+    const updateOption = (fid, oid, prop, val) => modifySubItem('option', fid, 'update', { id: oid, prop, val });
     const removeOption = (fid, oid) => modifySubItem('option', fid, 'remove', { id: oid });
 
     const addListItem = (fid) => modifySubItem('list', fid, 'add');
@@ -900,27 +1122,24 @@ const App = () => {
     const updateConsent = (fid, oid, prop, val) => modifySubItem('consent', fid, 'update', { id: oid, prop, val });
     const removeConsent = (fid, oid) => modifySubItem('consent', fid, 'remove', { id: oid });
 
-    // --- OPTION LOCKING LOGIC ---
     const toggleOptionLock = (fieldId, optionId) => {
         setFields(prev => prev.map(f => {
             if (f.id !== fieldId) return f;
 
             if (f.type === 'single_select') {
-                // Single select lock: select this, lock this, unlock others
                 const target = f.options.find(o => o.id === optionId);
                 const isLocking = !target.isLocked;
                 return {
                     ...f,
-                    value: isLocking ? target.value : f.value, // if locking, set value
+                    value: isLocking ? target.value : f.value,
                     options: f.options.map(o => ({
                         ...o,
-                        isLocked: o.id === optionId ? isLocking : false // mutex lock
+                        isLocked: o.id === optionId ? isLocking : false
                     }))
                 };
             }
 
             if (f.type === 'multi_select') {
-                // Multi select lock: toggle lock state. Value is preserved in f.value array.
                 return {
                     ...f,
                     options: f.options.map(o => o.id === optionId ? { ...o, isLocked: !o.isLocked } : o)
@@ -985,6 +1204,7 @@ const App = () => {
         });
         if (invalid.length > 0) { alert(t('alertFillRequired')); return; }
 
+
         const doc = new jsPDF();
 
         try {
@@ -1005,6 +1225,7 @@ const App = () => {
         } catch (err) {
             console.error("Could not load font, falling back to default", err);
         }
+
 
         const margin = 10;
         let yPos = 20;
@@ -1032,6 +1253,7 @@ const App = () => {
 
         doc.setDrawColor(r, g, b); doc.setLineWidth(0.5); doc.line(margin, yPos, pageWidth - margin, yPos); yPos += 15;
 
+        // Render Fields
         fields.forEach(f => {
             if (yPos > pageHeight - margin - 20) { doc.addPage(); yPos = 20; doc.setFillColor(r, g, b); doc.rect(0, 0, pageWidth, 5, 'F'); yPos += 10; }
 
@@ -1093,6 +1315,18 @@ const App = () => {
                 doc.text(sl, margin + 2, yPos + 1); yPos += h + 8;
             }
         });
+
+        // Add Price info AT THE END
+        if (headerInfo.isCalcEnabled && calculatePrice !== null) {
+            yPos += 10;
+            if (yPos > pageHeight - margin - 20) { doc.addPage(); yPos = 20; doc.setFillColor(r, g, b); doc.rect(0, 0, pageWidth, 5, 'F'); yPos += 10; }
+
+            doc.setDrawColor(r, g, b); doc.setLineWidth(0.5); doc.line(margin, yPos, pageWidth - margin, yPos); yPos += 10;
+
+            doc.setFontSize(16); doc.setTextColor(r, g, b); doc.setFont(undefined, 'bold');
+            doc.text(`Total price: ${headerInfo.currencySymbol}${calculatePrice.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
+        }
+
         doc.save(`${headerInfo.title.replace(/\s+/g, '_')}_Commission.pdf`);
     };
 
@@ -1140,28 +1374,48 @@ const App = () => {
                                         defaultValue=""
                                         onChange={(e) => {
                                             const value = e.target.value.trim();
-
-                                            console.log("select value:", JSON.stringify(value));
-                                            console.log("before:", headerInfo.preferredLanguages);
-
                                             if (value && !headerInfo.preferredLanguages.includes(value)) {
                                                 setHeaderInfo(p => ({
                                                     ...p,
                                                     preferredLanguages: [...p.preferredLanguages, value]
                                                 }));
                                             }
-
                                             langSelectRef.current.value = "";
-                                        }}
-                                    >
+                                        }}>
                                         <option value="">{t('addLang')}...</option>
                                         {AVAILABLE_LANGS
                                             .filter(l => !headerInfo.preferredLanguages.includes(l.code))
                                             .map(l => <option key={l.code} value={l.code}>{l.label}</option>)}
                                     </select>
-
                                 </div>
                             </div>
+
+                            {/* CALCULATOR SETTINGS */}
+                            <div className="border-t border-gray-700/50 pt-4 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Calculator className="w-4 h-4 text-emerald-500" />
+                                        <span className="text-sm font-medium text-gray-200">{t('calcLabel')}</span>
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" className="sr-only peer" checked={headerInfo.isCalcEnabled} onChange={(e) => setHeaderInfo(p => ({ ...p, isCalcEnabled: e.target.checked }))} />
+                                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                                    </label>
+                                </div>
+                                {headerInfo.isCalcEnabled && (
+                                    <div className="grid grid-cols-2 gap-4 animate-fadeIn">
+                                        <div className="space-y-1">
+                                            <label className="text-xs text-emerald-500 font-mono uppercase">{t('basePrice')}</label>
+                                            <input type="number" value={headerInfo.basePrice} onChange={(e) => setHeaderInfo(p => ({ ...p, basePrice: e.target.value }))} className="w-full bg-gray-900 border border-emerald-900/50 rounded-lg px-3 py-2 text-sm focus:border-emerald-500 outline-none" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-xs text-emerald-500 font-mono uppercase">{t('currencySym')}</label>
+                                            <input type="text" value={headerInfo.currencySymbol} onChange={(e) => setHeaderInfo(p => ({ ...p, currencySymbol: e.target.value }))} className="w-full bg-gray-900 border border-emerald-900/50 rounded-lg px-3 py-2 text-sm focus:border-emerald-500 outline-none" />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                             <div className="border-t border-gray-700/50 pt-4 flex items-center justify-between">
                                 <div className="flex items-center gap-2"><Brush className="w-4 h-4 text-gray-500" /><span className="text-sm text-gray-400">{t('themeLabel')}</span></div>
                                 <div className="flex items-center gap-3">
@@ -1182,7 +1436,7 @@ const App = () => {
                         <div className="space-y-4">
                             {fields.map((field, index) => (
                                 <BuilderFieldCard
-                                    key={field.id} field={field} index={index} totalFields={fields.length} t={t}
+                                    key={field.id} field={field} index={index} totalFields={fields.length} t={t} isCalcEnabled={headerInfo.isCalcEnabled}
                                     onUpdate={updateField} onRemove={removeField} onMoveUp={moveField} onMoveDown={moveField}
                                     onAddOption={addOption} onUpdateOption={updateOption} onRemoveOption={removeOption}
                                     onAddListItem={addListItem} onUpdateListItem={updateListItem} onRemoveListItem={removeListItem}
@@ -1203,28 +1457,52 @@ const App = () => {
                         {!viewMode && <div className="flex items-center gap-2"><Eye className="w-5 h-5 text-gray-400" /><h2 className="text-lg font-semibold text-gray-200">{t('formPreview')}</h2></div>}
                         {!viewMode && <span className="text-xs font-mono text-gray-500 uppercase">{t('livePreview')}</span>}
                     </div>
-                    <form onSubmit={viewMode ? handleGeneratePDF : handlePreviewSubmit} className="bg-white text-gray-900 rounded-xl overflow-hidden shadow-2xl min-h-[500px] flex flex-col transition-all">
+                    <form onSubmit={viewMode ? handleGeneratePDF : handlePreviewSubmit} className="bg-white text-gray-900 rounded-xl overflow-hidden shadow-2xl min-h-[500px] flex flex-col transition-all relative">
                         <div className={`h-3 w-full ${themeStyles.bgClass}`} style={themeStyles.bgStyle} />
-                        <div className="p-8 space-y-6 flex-1">
-                            <div className="mb-6">
-                                <h3 className="text-2xl font-bold text-gray-900">{headerInfo.title || 'Title'}</h3>
-                                <p className="text-gray-500 text-sm">By {headerInfo.artist || 'Artist Name'}</p>
-                                {(headerInfo.preferredLanguages || []).length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mt-3"><span className="text-xs font-bold text-gray-400 uppercase tracking-wide mt-0.5">{t('langsLabel')}</span>
-                                        {headerInfo.preferredLanguages.map(c => <span key={c} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded border border-gray-200">{AVAILABLE_LANGS.find(l => l.code === c)?.flag} {AVAILABLE_LANGS.find(l => l.code === c)?.label}</span>)}
+                        <div className="p-8 space-y-6 flex-1 pb-20">
+                            <div className="mb-6 flex justify-between items-start">
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-900">{headerInfo.title || 'Title'}</h3>
+                                    <p className="text-gray-500 text-sm">By {headerInfo.artist || 'Artist Name'}</p>
+                                    {(headerInfo.preferredLanguages || []).length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mt-3"><span className="text-xs font-bold text-gray-400 uppercase tracking-wide mt-0.5">{t('langsLabel')}</span>
+                                            {headerInfo.preferredLanguages.map(c => <span key={c} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded border border-gray-200">{AVAILABLE_LANGS.find(l => l.code === c)?.flag} {AVAILABLE_LANGS.find(l => l.code === c)?.label}</span>)}
+                                        </div>
+                                    )}
+                                </div>
+                                {headerInfo.isCalcEnabled && headerInfo.basePrice > 0 && (
+                                    <div className="text-right">
+                                        <div className="text-xs text-gray-400 uppercase font-bold tracking-wider">{t('basePrice')}</div>
+                                        <div className="text-lg font-mono font-bold text-gray-700">{headerInfo.currencySymbol}{headerInfo.basePrice || '0'}</div>
                                     </div>
                                 )}
                             </div>
                             {fields.map(f => (
                                 <PreviewFieldRenderer
                                     key={f.id} field={f} viewMode={viewMode} themeStyles={themeStyles} t={t}
+                                    isCalcEnabled={headerInfo.isCalcEnabled} currencySym={headerInfo.currencySymbol}
                                     onValueChange={handlePreviewValue} onDynamicItemChange={updateListItem}
                                     onDynamicItemRemove={removeListItem} onDynamicItemAdd={addListItem}
                                     onFileUpload={handleFileUpload} onFileRemove={removeFile} onLinkClick={(fid, oid, url) => { if (!url) return; window.open(url, '_blank'); setFields(fields.map(ff => ff.id === fid ? { ...ff, linkVisited: { ...ff.linkVisited, [oid]: true } } : ff)); }}
+                                    getOptionPriceDiff={getOptionPriceDiff}
                                 />
                             ))}
                         </div>
-                        <div className="bg-gray-50 px-8 py-4 border-t border-gray-100 flex justify-between items-center mt-auto">
+
+                        {/* TOTAL PRICE BAR */}
+                        {headerInfo.isCalcEnabled && (
+                            <div className="absolute bottom-[58px] left-0 right-0 bg-white/95 backdrop-blur border-t border-emerald-100 p-4 flex justify-between items-center shadow-lg">
+                                <div className="flex items-center gap-2 text-emerald-800 font-bold">
+                                    <Coins size={20} className="text-emerald-600" />
+                                    {t('totalPrice')}
+                                </div>
+                                <div className="text-xl font-mono font-black text-emerald-600">
+                                    {headerInfo.currencySymbol} {calculatePrice.toFixed(2)}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="bg-gray-50 px-8 py-4 border-t border-gray-100 flex justify-between items-center mt-auto z-10">
                             <div className="text-xs text-gray-400 font-mono flex items-center gap-1.5"><Hash size={12} className="opacity-50" />{configHash}</div>
                             <button type="submit" className={`text-xs font-bold uppercase px-4 py-2 rounded text-white opacity-90 transition-opacity hover:opacity-100 ${themeStyles.bgClass}`} style={themeStyles.bgStyle}>
                                 {viewMode ? <span className="flex items-center gap-2"><FileDown size={18} /> {t('downloadPdf')}</span> : t('submitPreview')}
