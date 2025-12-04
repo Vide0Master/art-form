@@ -102,7 +102,7 @@ const translations = {
         formPreview: "Предпросмотр", livePreview: "Живой просмотр", submitPreview: "Отправить",
         downloadPdf: "Скачать PDF", uploadDisabled: "Загрузка выкл.", clickToUpload: "Загрузить",
         noImages: "Нет картинок", requiredField: "Обязательно", requiredOpenLink: "Открыть ссылку",
-        openDoc: "Открыть", langsLabel: "Языки:", wantOwn: "Хотите такую анкету?",
+        openDoc: "Открыть", langsLabel: "Языки:", wantOwn: "Хочешь сделать свою ArtForm?",
         createOwn: "Создать", clickHere: "Жми сюда!",
         alertLibsLoading: "Загрузка библиотек...", alertFillRequired: "Заполните обязательные поля *",
         alertValid: "Успешно!", promptSaveName: "Название:",
@@ -151,7 +151,7 @@ const translations = {
         formPreview: "Перегляд", livePreview: "Живой перегляд", submitPreview: "Відправити",
         downloadPdf: "Скачати PDF", uploadDisabled: "Завантаження вимк.", clickToUpload: "Завантажити",
         noImages: "Немає зображень", requiredField: "Обов'язково", requiredOpenLink: "Потрібно відкрити посилання",
-        openDoc: "Відкрити", langsLabel: "Мови:", wantOwn: "Хочете таку анкету?",
+        openDoc: "Відкрити", langsLabel: "Мови:", wantOwn: "Хочеш зробити свою ArtForm?",
         createOwn: "Створити", clickHere: "Тисни тут!",
         alertLibsLoading: "Завантаження...", alertFillRequired: "Заповніть обов'язкові поля *",
         alertValid: "Успішно!", promptSaveName: "Назва:",
@@ -850,7 +850,7 @@ const App = () => {
         { id: '6', type: 'dynamic_list', label: 'Contacts', value: [{ id: '1', key: 'Email', text: '' }], displayStyle: 'default', options: [], isLocked: false, isRequired: true },
         { id: '2', type: 'long_text', label: 'Your idea', value: '', displayStyle: 'default', options: [], isLocked: false, isRequired: true },
         { id: '3', type: 'single_select', label: 'Format', value: 'head', displayStyle: 'buttons', options: [{ id: 'opt1', label: 'Head', value: 'head', priceModifier: '100' }, { id: 'opt2', label: 'Half', value: 'half', priceModifier: '200' }, { id: 'opt3', label: 'Full', value: 'full', priceModifier: '300' }], isLocked: false, isRequired: true },
-        { id: '4', type: 'single_select', label: 'Complexity', value: 'sketch', displayStyle: 'buttons', options: [{ id: 'opt1', label: 'Sketch', value: 'sketch', priceModifier: '' }, { id: 'opt2', label: 'Flat color', value: 'flat', priceModifier: '+50' }, { id: 'opt3', label: 'Full render', value: 'render', priceModifier: '*2' }], isLocked: false, isRequired: true },
+        { id: '4', type: 'single_select', label: 'Complexity', value: 'sketch', displayStyle: 'buttons', options: [{ id: 'opt1', label: 'Sketch', value: 'sketch', priceModifier: '+100' }, { id: 'opt2', label: 'Flat color', value: 'flat', priceModifier: '+200' }, { id: 'opt3', label: 'Full render', value: 'render', priceModifier: '+300' }], isLocked: false, isRequired: true },
         { id: '5', type: 'file', label: 'Reference Images', value: [], displayStyle: 'default', options: [], isLocked: false, isRequired: false }
     ]);
     const [themeColor, setThemeColor] = useState('purple');
