@@ -11,11 +11,14 @@ import {
     Calculator,
     Coins,
     CircleQuestionMark,
+    CodeSquare
 } from 'lucide-react';
 import LZString from 'lz-string';
 
 import { jsPDF } from 'jspdf';
 import FontUrl from "./Bahnschrift.ttf"
+
+import pkg from "../package.json"
 
 const AVAILABLE_LANGS = [
     { code: 'en', label: 'English' },
@@ -76,8 +79,9 @@ const translations = {
         multi_select_tip: "Multiple select field allows users to select multiple options from the listed choices.",
         file_tip: "File input field allows users to attach images to the resulting PDF file.",
         info_text_tip: "Text block field is used to display information inside the form and does not receive input from users.",
-        consent_tip: "Consent field is used to display information inside the form and requires users to confirm agreement when applicable."
+        consent_tip: "Consent field is used to display information inside the form and requires users to confirm agreement when applicable.",
 
+        version:"Version"
     },
     ru: {
         appTitle: "Конструктор", myTemplates: "Мои шаблоны", noTemplates: "Нет шаблонов",
@@ -124,7 +128,9 @@ const translations = {
         multi_select_tip: "Поле множественного выбора позволяет пользователю выбрать несколько вариантов из предложенных.",
         file_tip: "Поле загрузки файлов позволяет пользователю прикреплять изображения к создаваемому PDF файлу.",
         info_text_tip: "Текстовий блок використовується для відображення інформації у формі та не приймає введення від користувача.",
-        consent_tip: "Поле согласия используется для отображения информации в форме и требует подтверждения пользователем при необходимости."
+        consent_tip: "Поле согласия используется для отображения информации в форме и требует подтверждения пользователем при необходимости.",
+
+        version: "Версия"
     },
     uk: {
         appTitle: "Конструктор", myTemplates: "Шаблони", noTemplates: "Немає шаблонів",
@@ -171,7 +177,9 @@ const translations = {
         multi_select_tip: "Поле множинного вибору дозволяє користувачу обрати кілька варіантів із запропонованих.",
         file_tip: "Поле завантаження файлів дозволяє користувачу прикріплювати зображення до створюваного PDF файлу.",
         info_text_tip: "Текстовий блок використовується для відображення інформації у формі та не приймає введення від користувача.",
-        consent_tip: "Поле згоди використовується для відображення інформації у формі та вимагає підтвердження користувачем при необхідності."
+        consent_tip: "Поле згоди використовується для відображення інформації у формі та вимагає підтвердження користувачем при необхідності.",
+
+        version: "Версія"
     }
 };
 
@@ -908,24 +916,17 @@ const App = () => {
         let base = parseFloat(headerInfo.basePrice) || 0;
         let current = base;
 
-        // Helper to apply modifier
-        const applyMod = (modStr, quantity = 1, direct = false) => {
-            let op = ""
-            let val = 0
+        const applyMod = (modStr, quantity = 1) => {
+            console.log(modStr, quantity)
             if (!modStr) return;
 
             modStr = modStr.trim();
             const qty = isNaN(parseFloat(quantity)) ? 0 : parseFloat(quantity);
+            const match = modStr.match(/^(\*\*|\/\/|%%|\*|\/|%|\+|-)?(\d+(\.\d+)?)?$/);
+            if (!match) return;
 
-            if (!direct) {
-                const match = modStr.match(/^(\*\*|\/\/|%%|\*|\/|%|\+|-)?(\d+(\.\d+)?)?$/);
-                if (!match) return;
-                op = match[1] || '';
-                val = parseFloat(match[2]);
-            } else {
-                op = modStr
-                val = quantity
-            }
+            const op = match[1] || '';
+            const val = parseFloat(match[2]);
 
             if (isNaN(val)) return;
 
@@ -945,10 +946,7 @@ const App = () => {
 
         currentFields.forEach(f => {
             if (f.type === 'info_text' || f.type === 'file' || f.type === 'dynamic_list' || f.type === 'consent') return;
-            if (f.type === 'short_text' && f.priceModifier) {
-                console.log(f.priceModifier, parseInt(f.value))
-                applyMod(String(f.priceModifier), parseInt(f.value), true);
-            }
+            if (f.type === 'short_text' && f.priceModifier) applyMod(f.priceModifier + f.value);
             else if (f.type === 'single_select') {
                 const opt = f.options.find(o => o.value === f.value);
                 if (opt && opt.priceModifier) applyMod(opt.priceModifier, 1);
@@ -1530,6 +1528,9 @@ const App = () => {
                 <a href="https://github.com/Vide0Master/art-form" className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-300 hover:bg-gray-800 border border-transparent hover:border-gray-700 whitespace-nowrap">
                     <Github size={18} /><span className="hidden sm:inline">{t('gitHubRepo')}</span>
                 </a>
+                <div className='flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-300 hover:bg-gray-800 border border-transparent hover:border-gray-700 whitespace-nowrap'>
+                    <CodeSquare size={16} className='inline'/> {t('version')}: {pkg.version}
+                </div>
             </footer>
         </div>
     );
